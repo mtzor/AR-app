@@ -1,0 +1,54 @@
+{
+    "name": "XRInputActions",
+    "maps": [
+        {
+            "name": "Hand gestures",
+            "id": "f1b49225-bb46-4223-8624-a65cd68d415d",
+            "actions": [
+                {
+                    "name": "LeftPinch",
+                    "type": "Value",
+                    "id": "de106063-e9bd-49b6-bd7d-17aecada23dd",
+                    "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "RightPinch",
+                    "type": "Value",
+                    "id": "97e72312-eca5-4fb7-a398-e4a2e4cf3989",
+                    "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "f524a8ad-6976-4f6a-bc93-d92916a58280",
+                    "path": "<OpenXRHandTracking>{LeftHand}/{PinchValue}",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "LeftPinch",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "7be0482d-45a7-4f24-9284-0bb7474ec809",
+                    "path": "<OpenXRHandTracking>{RightHand}/{PinchValue}",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RightPinch",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
