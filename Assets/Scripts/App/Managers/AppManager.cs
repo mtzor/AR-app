@@ -52,7 +52,7 @@ public class AppManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //UpdatePhase(AppPhase.Startup);
+        UpdatePhase(AppPhase.Startup);
        // UIManager.Instance.HideAll();  // Hide all UI elements at the start
         ///UIManager.Instance.Show("MainMenu");  // Show the main menu UI
 
@@ -148,14 +148,27 @@ public class AppManager : MonoBehaviour
 
                 TriggerAppPhaseChange();
 
-
                 break;
+
             case AppPhase.Design_P1:
                 // Handle tutorial logic
                 currentPhase = AppPhase.Design_P1;
 
                 TriggerAppPhaseChange();
+                break;
 
+            case AppPhase.Customize_P2:
+                // Handle tutorial logic
+                currentPhase = AppPhase.Customize_P2;
+
+                TriggerAppPhaseChange();
+
+                break;
+            case AppPhase.Design_P2:
+                // Handle tutorial logic
+                currentPhase = AppPhase.Design_P2;
+
+                TriggerAppPhaseChange();
 
                 break;
 
@@ -218,6 +231,17 @@ public class AppManager : MonoBehaviour
         }
     }
 
+    public void setNextPhase()
+    {
+        if (LobbyManager.Instance.sessionMode == LobbyManager.SessionMode.Design)
+        {
+            UpdatePhase(AppPhase.Design_P2);
+        }
+        else if (LobbyManager.Instance.sessionMode == LobbyManager.SessionMode.Customize)
+        {
+            UpdatePhase(AppPhase.Customize_P2);
+        }
+    }
     public async Task<DialogButtonType> StartApp()
     {
 

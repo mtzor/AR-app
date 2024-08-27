@@ -28,16 +28,16 @@ public class Module : MonoBehaviour
 
         BuildingArea area = other.GetComponent<BuildingArea>();
 
-       
-        if (area != null && !area.IsOccupied && area.AreaID != this.name && IsRotationValid(area))
+        if (area != null && !area.IsOccupied && area.AreaID != this.moduleData.Name && IsRotationValid(area))
         {
-            Debug.Log("Entered fitting area Encapsulated: " + area.AreaID);
+            //Debug.Log("Entered fitting area Encapsulated: " + area.AreaID);
             area.Occupy();
 
         }
 
-        if (area != null && !area.IsOccupied && area.AreaID == this.name && IsRotationValid(area))
+        if (area != null && !area.IsOccupied && area.AreaID == this.moduleData.Name && IsRotationValid(area))
         {
+            DesignManager.Instance.AddArea(moduleData.Area);
             SetLastValidArea(area);
             ChangeColor(true);
             //Debug.Log("Entered fitting area: " + area.AreaID);
@@ -51,7 +51,7 @@ public class Module : MonoBehaviour
         BuildingArea area = other.GetComponent<BuildingArea>();
 
        // Debug.Log("Trigger stay: " + area.AreaID+" Area occupied"+area.IsOccupied);
-        if (area != null && !area.IsOccupied && area.AreaID == this.name && IsRotationValid(area))
+        if (area != null && !area.IsOccupied && area.AreaID == this.moduleData.Name && IsRotationValid(area))
         {
             if (area != lastValidArea)
             {
@@ -72,9 +72,9 @@ public class Module : MonoBehaviour
     {
         BuildingArea area = other.GetComponent<BuildingArea>();
 
-        if (area != null && area.IsOccupied && area.AreaID != this.name && IsRotationValid(area))
+        if (area != null && area.IsOccupied && area.AreaID != this.moduleData.Name && IsRotationValid(area))
         {
-            Debug.Log("Vacated fitting area encaapsulated: " + area.AreaID);
+            //Debug.Log("Vacated fitting area encaapsulated: " + area.AreaID);
             area.Vacate();
 
         }
@@ -83,10 +83,11 @@ public class Module : MonoBehaviour
 
         if (area != null && area == lastValidArea)
         {
+            DesignManager.Instance.SubtractArea(moduleData.Area);
             // If exiting the last valid area, revert its material and flag
             RevertLastValidArea();
             ChangeColor(false); // Ensure the module's material changes to nofitMaterial
-            Debug.Log("Exited fitting area: " + area.AreaID);
+           // Debug.Log("Exited fitting area: " + area.AreaID);
             isInsideValidArea = false;
         }
     }
@@ -171,7 +172,7 @@ public class Module : MonoBehaviour
 
         if (!isRectangular)
         {
-           // Debug.Log("Not rectangular rotation" + Mathf.Abs(moduleYRotation - areaYRotation));
+            //Debug.Log("Not rectangular rotation" + Mathf.Abs(moduleYRotation - areaYRotation));
             return Mathf.Abs(moduleYRotation - areaYRotation) < 1f; // Allow small tolerance due to floating point errors
         }
         else { 
@@ -179,4 +180,6 @@ public class Module : MonoBehaviour
             return (Mathf.Abs(moduleYRotation - areaYRotation) < 1f || (Mathf.Abs(moduleYRotation - areaYRotation)> 90f && Mathf.Abs(moduleYRotation - areaYRotation) <181f));
         } // Allow small tolerance due to floating point errors
     }
+
+
 }

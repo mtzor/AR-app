@@ -155,6 +155,18 @@ public class UIManager : MonoBehaviour
                 currentInterface = "Design_P1 UI";
                 break;
 
+            case AppManager.AppPhase.Customize_P2:
+                HideAll();
+                Show("Customize_P2 UI");
+                currentInterface = "Customize_P2 UI";
+                break;
+
+            case AppManager.AppPhase.Design_P2:
+                HideAll();
+                Show("Design_P2 UI");
+                currentInterface = "Design_P2 UI";
+                break;
+
             case AppManager.AppPhase.HomeDialogue:
                 HideAll();
                 break;

@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: 90straight
   m_EditorClassIdentifier: 
   moduleID: 5
-  Name: 90L
+  Name: 90straight
   Size: {x: 0.1, y: 0.03, z: 0.11}
   Area: 90

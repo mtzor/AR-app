@@ -173,7 +173,7 @@ MonoBehaviour:
   - {fileID: -5099742537652907690}
   - {fileID: 3756162226768036169}
   - {fileID: -7631827160202420019}
-  - {fileID: 2297936825740370924}
+  - {fileID: 3234702652080152087}
   - {fileID: -5803178868533536396}
   - {fileID: -6732844716334912636}
   - {fileID: 8886544171411597483}
@@ -250,6 +250,26 @@ MonoBehaviour:
   openxrExtensionStrings: XR_FB_hand_tracking_aim
   company: Unity
   priority: 0
+  required: 0
+--- !u!114 &-3842110731368435113
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e314dfef9af0904e80129bcc0a79361, type: 3}
+  m_Name: HandTracking Standalone
+  m_EditorClassIdentifier: 
+  m_enabled: 0
+  nameUi: Hand Tracking Subsystem
+  version: 0.0.1
+  featureIdInternal: com.unity.openxr.feature.input.handtracking
+  openxrExtensionStrings: XR_EXT_hand_tracking
+  company: Unity
+  priority: -100
   required: 0
 --- !u!114 &-3213573691150189044
 MonoBehaviour:
@@ -412,13 +432,13 @@ MonoBehaviour:
   - {fileID: 3112845506284228944}
   - {fileID: 8688277297913584963}
   - {fileID: -428944105387663391}
-  - {fileID: 8139738408614428843}
+  - {fileID: -3842110731368435113}
   - {fileID: 2800709243789190368}
   - {fileID: 4805591274675254411}
   - {fileID: 5097968938898003297}
   - {fileID: 6063833717838420510}
   - {fileID: -3213573691150189044}
-  - {fileID: -3885658816213894254}
+  - {fileID: 2408279666872778352}
   - {fileID: -959999271704382332}
   - {fileID: 8197741548005137685}
   - {fileID: -2342197335140727047}
@@ -505,7 +525,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f34c86d1a130cc45a438373e1e8a4fc, type: 3}
   m_Name: PlayModeRemotingPlugin Standalone
   m_EditorClassIdentifier: 
-  m_enabled: 0
+  m_enabled: 1
   nameUi: Holographic Remoting for Play Mode
   version: 1.11.1
   featureIdInternal: com.microsoft.openxr.feature.playmoderemoting
@@ -701,6 +721,26 @@ MonoBehaviour:
   company: Unity
   priority: -100
   required: 0
+--- !u!114 &2408279666872778352
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3aced3429e5911458f4da2dac9d0f29, type: 3}
+  m_Name: MetaHandTrackingAim Standalone
+  m_EditorClassIdentifier: 
+  m_enabled: 0
+  nameUi: Meta Hand Tracking Aim
+  version: 0.0.1
+  featureIdInternal: com.unity.openxr.feature.input.metahandtrackingaim
+  openxrExtensionStrings: XR_FB_hand_tracking_aim
+  company: Unity
+  priority: 0
+  required: 0
 --- !u!114 &2800709243789190368
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -766,6 +806,26 @@ MonoBehaviour:
   openxrExtensionStrings: 
   company: Unity
   priority: 0
+  required: 0
+--- !u!114 &3234702652080152087
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e314dfef9af0904e80129bcc0a79361, type: 3}
+  m_Name: HandTracking Metro
+  m_EditorClassIdentifier: 
+  m_enabled: 0
+  nameUi: Hand Tracking Subsystem
+  version: 0.0.1
+  featureIdInternal: com.unity.openxr.feature.input.handtracking
+  openxrExtensionStrings: XR_EXT_hand_tracking
+  company: Unity
+  priority: -100
   required: 0
 --- !u!114 &3756162226768036169
 MonoBehaviour:
