@@ -24,8 +24,16 @@ public class DesignNetworkSyncScript : NetworkBehaviour
 
     private int currentFloor = 0;
 
+    private bool firstModuleofFloor = true;
+
     private bool floorBtnActive = false;
 
+
+    public bool FirstModuleOfFloor
+    {
+        set => firstModuleofFloor = value;
+        get => firstModuleofFloor;
+    }
     // Start is called before the first frame update
     public static DesignNetworkSyncScript Instance
     {
@@ -58,11 +66,6 @@ public class DesignNetworkSyncScript : NetworkBehaviour
         currentFloor = newValue;
         Debug.Log("Current Floor No changed from :" + previousValue + " to :" + newValue);
 
-        float yval = floorNo.Value * 0.03f;
-
-        Transform previousModulePos = ModuleSpawner.Instance.ModuleSpawnPos;
-
-        ModuleSpawner.Instance.ModuleSpawnPos.transform.position = previousModulePos.transform.position + new Vector3(0, yval, 0);
 
         //deactivate previous floor gameobject
         floors[currentFloor - 1].SetActive(false);
@@ -74,6 +77,7 @@ public class DesignNetworkSyncScript : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     public void AddFloorServerRpc()
     {
+        firstModuleofFloor = true;
         currentFloor++;//increasing floor number
 
         floorNo.Value = currentFloor;//updating floor number network variable
