@@ -6,7 +6,7 @@ public class ModuleSpawner : NetworkBehaviour
     [SerializeField] private Transform[] modulePrefabs; // Prefab registered in NetworkManager
     [SerializeField] private Transform moduleContainer; // Parent container for spawned objects
 
-    private bool firstModuleofFloor=true;
+    private bool firstModuleofFloor=false;
 
     // Method called by clients to request the server to spawn a module
     public void OnSpawnButtonPressed(int moduleIndex)
@@ -24,12 +24,13 @@ public class ModuleSpawner : NetworkBehaviour
     {
         Debug.Log("Server spawning module: " + moduleIndex + " for client: " + clientId);
 
-        float yval = DesignNetworkSyncScript.Instance.floorNo.Value * 0.03f;
+        float yval =  0.03f;
 
         Debug.Log("Spawning position: " + yval+ "Floor No:"+DesignNetworkSyncScript.Instance.floorNo);
 
         if (DesignNetworkSyncScript.Instance.FirstModuleOfFloor)
         {
+            Debug.Log("First Module of the Floor No:" + DesignNetworkSyncScript.Instance.floorNo);
             moduleContainer.transform.position += new Vector3(0, yval, 0);
             DesignNetworkSyncScript.Instance.FirstModuleOfFloor = false;
         }

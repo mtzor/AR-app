@@ -24,7 +24,7 @@ public class DesignNetworkSyncScript : NetworkBehaviour
 
     private int currentFloor = 0;
 
-    private bool firstModuleofFloor = true;
+    private bool firstModuleofFloor = false;
 
     private bool floorBtnActive = false;
 
