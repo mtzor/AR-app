@@ -22,7 +22,7 @@ public class LobbyUI : MonoBehaviour {
     [SerializeField] private PressableButton changeExperButton;
     [SerializeField] private PressableButton changeNonExpertButton;
     [SerializeField] private PressableButton leaveLobbyButton;
-    [SerializeField] private PressableButton changeSessionModeButton;//??????MAYBE PREDEFINED
+    //[SerializeField] private PressableButton changeSessionModeButton;//??????MAYBE PREDEFINED
     [SerializeField] private PressableButton startSessionButton;
 
 
@@ -41,9 +41,9 @@ public class LobbyUI : MonoBehaviour {
             LobbyManager.Instance.LeaveLobby();
         });
 
-        changeSessionModeButton.OnClicked.AddListener(() => {
-            LobbyManager.Instance.ChangeSessionMode();
-        });
+        //changeSessionModeButton.OnClicked.AddListener(() => {
+         //   LobbyManager.Instance.ChangeSessionMode();
+       // });
         startSessionButton.OnClicked.AddListener(() => {
             LobbyManager.Instance.StartSession();
         });
@@ -53,7 +53,7 @@ public class LobbyUI : MonoBehaviour {
     private void Start() {
         LobbyManager.Instance.OnJoinedLobby += UpdateLobby_Event;
         LobbyManager.Instance.OnJoinedLobbyUpdate += UpdateLobby_Event;
-        LobbyManager.Instance.OnLobbySessionModeChanged += UpdateLobby_Event;
+        //LobbyManager.Instance.OnLobbySessionModeChanged += UpdateLobby_Event;
         LobbyManager.Instance.OnLeftLobby += LobbyManager_OnLeftLobby;
         LobbyManager.Instance.OnKickedFromLobby += LobbyManager_OnLeftLobby;
         LobbyManager.Instance.OnSessionStarted += LobbyManager_OnSessionStarted;
@@ -93,10 +93,11 @@ public class LobbyUI : MonoBehaviour {
                 player.Id != AuthenticationService.Instance.PlayerId // Don't allow kick self
             );
 
+
             lobbyPlayerSingleUI.UpdatePlayer(player);
         }
 
-        changeSessionModeButton.gameObject.SetActive(LobbyManager.Instance.IsLobbyHost());
+        startSessionButton.gameObject.SetActive(LobbyManager.Instance.IsLobbyHost());
 
         lobbyNameText.text = lobby.Name;
         playerCountText.text = lobby.Players.Count + "/" + lobby.MaxPlayers;

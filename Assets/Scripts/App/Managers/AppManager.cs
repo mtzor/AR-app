@@ -31,6 +31,10 @@ public class AppManager : MonoBehaviour
 
     }
 
+    public AppPhase CurrentPhase()
+    {
+        return currentPhase;
+    }
     public class AppPhaseChangeEvent
     {
         public AppManager.AppPhase newPhase; // The new game phase

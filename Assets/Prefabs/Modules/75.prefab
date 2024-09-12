@@ -18,9 +18,10 @@ GameObject:
   - component: {fileID: 2519317565782312569}
   - component: {fileID: 4755298636598260089}
   - component: {fileID: 4791473007722022376}
-  - component: {fileID: 4674143089901066363}
   - component: {fileID: 1258126953054490511}
   - component: {fileID: 7564180328022603018}
+  - component: {fileID: -4271182930157962157}
+  - component: {fileID: 759645510644444037}
   m_Layer: 6
   m_Name: 75
   m_TagString: Untagged
@@ -544,7 +545,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 4674143089901066363}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: ObjectRotator, Assembly-CSharp
         m_MethodName: OnManipulationEnded
         m_Mode: 1
@@ -723,19 +724,6 @@ MonoBehaviour:
       reference: MixedReality.Toolkit.SpatialManipulation.RotateLogic, MixedReality.Toolkit.SpatialManipulation
     scaleLogicType:
       reference: MixedReality.Toolkit.SpatialManipulation.ScaleLogic, MixedReality.Toolkit.SpatialManipulation
---- !u!114 &4674143089901066363
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5141530986571876637}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6f53023213a0ef04d9ae55fb20e7487c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  objectToRotate: {fileID: 5141530986571876637}
 --- !u!114 &1258126953054490511
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -770,3 +758,55 @@ MonoBehaviour:
   executionOrder: 0
   constraintOnRotation: 5
   useLocalSpaceForConstraint: 1
+--- !u!114 &-4271182930157962157
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5141530986571876637}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 2771970039
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  AlwaysReplicateAsRoot: 1
+  SynchronizeTransform: 0
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 1
+  AutoObjectParentSync: 1
+--- !u!114 &759645510644444037
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5141530986571876637}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df2868252ab5c4d1da357e8f11f1b524, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  UseUnreliableDeltas: 0
+  SyncPositionX: 1
+  SyncPositionY: 1
+  SyncPositionZ: 1
+  SyncRotAngleX: 1
+  SyncRotAngleY: 1
+  SyncRotAngleZ: 1
+  SyncScaleX: 1
+  SyncScaleY: 1
+  SyncScaleZ: 1
+  PositionThreshold: 0.001
+  RotAngleThreshold: 0.01
+  ScaleThreshold: 0.01
+  UseQuaternionSynchronization: 0
+  UseQuaternionCompression: 0
+  UseHalfFloatPrecision: 0
+  InLocalSpace: 0
+  Interpolate: 1
+  SlerpPosition: 0

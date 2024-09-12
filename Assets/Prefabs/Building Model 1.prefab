@@ -252,7 +252,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2048574659063372298}
-  - {fileID: 4111991417369806070}
+  - {fileID: 8315778001140007849}
   - {fileID: 5259667926274846403}
   - {fileID: 1504523018264966499}
   m_Father: {fileID: 7947971425215676353}
@@ -1114,6 +1114,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7194030141799976583, guid: 866b835da7e81374fbbb1606d6191d23, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7194030141799976583, guid: 866b835da7e81374fbbb1606d6191d23, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8209917494924216198, guid: 866b835da7e81374fbbb1606d6191d23, type: 3}
       propertyPath: m_Name
       value: Floor Complete
@@ -1123,9 +1131,9 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 866b835da7e81374fbbb1606d6191d23, type: 3}
---- !u!224 &4111991417369806070 stripped
+--- !u!224 &8315778001140007849 stripped
 RectTransform:
-  m_CorrespondingSourceObject: {fileID: 2999813158254528984, guid: 866b835da7e81374fbbb1606d6191d23, type: 3}
+  m_CorrespondingSourceObject: {fileID: 7194030141799976583, guid: 866b835da7e81374fbbb1606d6191d23, type: 3}
   m_PrefabInstance: {fileID: 1202953974270233902}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &2799255225313029926

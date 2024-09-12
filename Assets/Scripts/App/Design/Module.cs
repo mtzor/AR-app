@@ -1,6 +1,8 @@
+using MixedReality.Toolkit.SpatialManipulation;
+using Unity.Netcode;
 using UnityEngine;
 
-public class Module : MonoBehaviour
+public class Module : NetworkBehaviour
 {
     public ModuleScriptable moduleData; // Information about the module, like its name or ID.
     private bool isPlaced = false;
@@ -8,9 +10,7 @@ public class Module : MonoBehaviour
 
     [SerializeField] private Material fitMaterial;       // Material for the module when it fits
     [SerializeField] private Material nofitMaterial;     // Material for the module when it doesn't fit
-    [SerializeField] private Material highlightMaterial; // Material to highlight the valid BuildingArea
 
-    private Material originalAreaMaterial;   // To store the original material of the BuildingArea
     private BuildingArea lastValidArea;      // To store the last valid area entered
     private Vector3 initialPosition;         // To store the initial position in case no valid area is found
     private bool isInsideValidArea = false;  // Flag to determine if the module is in a valid area
@@ -31,7 +31,7 @@ public class Module : MonoBehaviour
         if (area != null && !area.IsOccupied && area.AreaID != this.moduleData.Name && IsRotationValid(area))
         {
             //Debug.Log("Entered fitting area Encapsulated: " + area.AreaID);
-            area.Occupy();
+            area.OccupyServerRpc();
 
         }
 
@@ -75,7 +75,7 @@ public class Module : MonoBehaviour
         if (area != null && area.IsOccupied && area.AreaID != this.moduleData.Name && IsRotationValid(area))
         {
             //Debug.Log("Vacated fitting area encaapsulated: " + area.AreaID);
-            area.Vacate();
+            area.VacateServerRpc();
 
         }
 
@@ -125,8 +125,7 @@ public class Module : MonoBehaviour
 
         // Set the new last valid area and highlight it
         lastValidArea = area;
-        originalAreaMaterial = area.GetComponent<Renderer>().material;
-        area.GetComponent<Renderer>().material = highlightMaterial;
+        area.HighlightAreaMaterialClientRpc();
         isInsideValidArea = true;
     }
 
@@ -134,7 +133,7 @@ public class Module : MonoBehaviour
     {
         if (lastValidArea != null)
         {
-            lastValidArea.GetComponent<Renderer>().material = originalAreaMaterial;
+            lastValidArea.RevertAreaMaterialClientRpc();
             lastValidArea = null;
             isInsideValidArea = false;
         }
@@ -149,13 +148,14 @@ public class Module : MonoBehaviour
 
         // Mark the module as placed and the area as occupied
         isPlaced = true;
-        area.Occupy();
+        area.OccupyServerRpc();
 
         // Revert the area to its original material after snapping
-        area.GetComponent<Renderer>().material = originalAreaMaterial;
+        area.RevertAreaMaterialClientRpc();
 
         // Make the module stationary
         GetComponent<Rigidbody>().isKinematic = true;
+        GetComponent<ObjectManipulator>().enabled = false;
     }
 
     private void ChangeColor(bool fits)

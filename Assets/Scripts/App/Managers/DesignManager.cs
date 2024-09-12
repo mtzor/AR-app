@@ -2,19 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading.Tasks;
+using Unity.Netcode;
 using UnityEngine;
+using static Microsoft.MixedReality.GraphicsTools.MeshInstancer;
 
 public class DesignManager : MonoBehaviour
 {
     private static DesignManager _instance;
     [SerializeField] private Transform buildingPrefab;
-    [SerializeField] private Transform[] modulePrefabs;
-    [SerializeField] private Transform floorPrefab;
     [SerializeField] private Transform container;
-    [SerializeField] private Transform moduleContainer;
-    [SerializeField] private Transform FloorContainer;
-
-    [SerializeField] private GameObject finalizeFloorButton;
 
     public delegate void AreaUpdated(int area);
     public static event AreaUpdated OnAreaUpdatedEvent;
@@ -76,11 +72,6 @@ public class DesignManager : MonoBehaviour
         }
     }
 
-    public void SpawnModule(int i)
-    {
-        Instantiate(modulePrefabs[i], moduleContainer);
-    }
-
     public void AddArea(int area)
     {
         coveredArea += area;
@@ -93,34 +84,24 @@ public class DesignManager : MonoBehaviour
         TriggerAreaUpdatedEvent();
     }
 
+    public void ResetAreaCovered()
+    {
+        coveredArea = 0;
+        TriggerAreaUpdatedEvent();
+
+        Debug.Log("Area covered set to 0");
+    }
+
     private void TriggerAreaUpdatedEvent()
     {
         OnAreaUpdatedEvent?.Invoke(coveredArea);
 
         // Additional logic can be added here if needed
-        if (coveredArea >= TOTAL_AREA)
+        if (coveredArea == TOTAL_AREA)
         {
             Debug.Log("Building is full");
-            finalizeFloorButton.SetActive(true);
+            DesignNetworkSyncScript.Instance.ActivateNextFloorBtnServerRpc();
         }
     }
 
-    public void AddFloor()
-    {
-
-        // Increment the floor count
-        floorCount++;
-
-        if (floorCount < MAX_FLOORS)
-        {
-            // Calculate the height offset for the new floor
-            float heightOffset = floorPrefab.localScale.y * floorCount;
-
-            // Instantiate the new floor at the appropriate height
-            Transform newFloor = Instantiate(floorPrefab, FloorContainer);
-
-            // Adjust the position of the new floor
-            newFloor.localPosition = new Vector3(0, heightOffset, 0);
-        }
-    }
-}
+ }
