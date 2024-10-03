@@ -7,10 +7,11 @@ public class ModuleScriptable : ScriptableObject
     public int moduleID;
     public string Name;
     public Vector3 Size;
-    public int Area;
-
+    public int[] Area;
    
 }
+
+
 
 
 

@@ -27,7 +27,7 @@ public class LobbyPlayerSingleUI : MonoBehaviour {
 
     public void UpdatePlayer(Player player) {
         this.player = player;
-        playerNameText.text = player.Data[LobbyManager.KEY_PLAYER_NAME].Value;
+        playerNameText.text = player.Data[LobbyManager.PLAYER_NAME_KEY].Value;
         playerTypeText.text = "<size=6><alpha=#88>"+ player.Data[LobbyManager.KEY_PLAYER_TYPE].Value+ "</size>";
     }
 

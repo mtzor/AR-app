@@ -1,6 +1,8 @@
+using GLTFast.Schema;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Threading.Tasks;
 
 public class ModuleBin : MonoBehaviour
 {
@@ -16,10 +18,19 @@ public class ModuleBin : MonoBehaviour
         
     }
 
-    public void OnTriggerEnter(Collider other)
+    public async void OnTriggerEnter(Collider other)
     {
         Debug.Log("Module destroyed");
-            Destroy(other.gameObject);
+        other.GetComponent<Module>().animator.enabled=true;
+        other.GetComponent<Module>().animator.Play(other.GetComponent<Module>().clipName);
+
+        await Task.Delay(1000);
+
+        //Destroy(other.gameObject);
+        if (other != null)
+        {
+            other.gameObject.GetComponent<Module>().DestroyModuleServerRPC();
+        }
         
     }
     private void OnCollisionEnter(Collision collision)

@@ -43,6 +43,7 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    #region UI init & toggling
     // Initialize all UI elements and store them in a dictionary for easy access
     private void InitializeUIElements()
     {
@@ -93,6 +94,7 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    #endregion
     private void UpdateAppPhaseEvent(AppManager.AppPhaseChangeEvent e)
     {
         // Implement logic to show/hide UI elements based on the newPhase (e.newPhase)

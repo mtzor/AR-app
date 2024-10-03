@@ -12,14 +12,8 @@ public class DesignManager : MonoBehaviour
     [SerializeField] private Transform buildingPrefab;
     [SerializeField] private Transform container;
 
-    public delegate void AreaUpdated(int area);
-    public static event AreaUpdated OnAreaUpdatedEvent;
-
-    public static int TOTAL_AREA = 240;
-    public static int MAX_FLOORS = 3;
 
     private Transform _building;
-    private int coveredArea = 0;
     private int floorCount = 0;
 
     // Singleton pattern
@@ -44,17 +38,10 @@ public class DesignManager : MonoBehaviour
         }
     }
 
-    public void Start()
-    {
-        // Listen to app phase change
-        if (AppManager.Instance != null)
-        {
-            // AppManager.Instance.OnAppPhaseChanged += UpdateAppPhaseEvent;
-        }
-
-        // bool placed = placeBuilding();
+    public int FloorCount {
+        set => floorCount = value; get => (int) floorCount; 
     }
-
+ 
     void OnDestroy() // Unsubscribe from event when UIManager is destroyed
     {
         if (AppManager.Instance != null)
@@ -72,36 +59,6 @@ public class DesignManager : MonoBehaviour
         }
     }
 
-    public void AddArea(int area)
-    {
-        coveredArea += area;
-        TriggerAreaUpdatedEvent();
-    }
-
-    public void SubtractArea(int area)
-    {
-        coveredArea -= area;
-        TriggerAreaUpdatedEvent();
-    }
-
-    public void ResetAreaCovered()
-    {
-        coveredArea = 0;
-        TriggerAreaUpdatedEvent();
-
-        Debug.Log("Area covered set to 0");
-    }
-
-    private void TriggerAreaUpdatedEvent()
-    {
-        OnAreaUpdatedEvent?.Invoke(coveredArea);
-
-        // Additional logic can be added here if needed
-        if (coveredArea == TOTAL_AREA)
-        {
-            Debug.Log("Building is full");
-            DesignNetworkSyncScript.Instance.ActivateNextFloorBtnServerRpc();
-        }
-    }
+        
 
  }

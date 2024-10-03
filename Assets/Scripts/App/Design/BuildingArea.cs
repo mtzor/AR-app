@@ -47,6 +47,7 @@ public class BuildingArea : NetworkBehaviour
     {
         originalAreaMaterial = this.GetComponent<Renderer>().material;
         this.GetComponent<Renderer>().material = highlightMaterial;
+        Debug.Log("Highlighting Area: "+areaID);
     }
 
     [ClientRpc(RequireOwnership = false)]

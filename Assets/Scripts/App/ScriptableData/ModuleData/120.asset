@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4f6a16b2b6354247a6e4896e6d7200a, type: 3}
   m_Name: 120
   m_EditorClassIdentifier: 
-  moduleID: 7
+  moduleID: 4
   Name: 120
   Size: {x: 0.16, y: 0.03, z: 0.01}
-  Area: 120
+  Area: 78000000

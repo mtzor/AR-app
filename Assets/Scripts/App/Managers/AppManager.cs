@@ -12,6 +12,7 @@ public class AppManager : MonoBehaviour
     private AppPhase currentPhase;
     private AppPhase previousPhase;
 
+    #region AppPhases & AppPhaseChangeEvent
     public enum AppPhase
     {
         Startup,
@@ -26,15 +27,24 @@ public class AppManager : MonoBehaviour
         Design_P2,
         Customize_P1,
         Customize_P2,
+        Saving_Design,
         Visualize_Menu,
         Visualize
 
     }
 
+    //Get current phase of the app
     public AppPhase CurrentPhase()
     {
         return currentPhase;
     }
+    //Get the previous App Phase
+    public AppPhase PreviousPhase()
+    {
+        return previousPhase;
+    }
+
+    //custom event fired when the app changes phase
     public class AppPhaseChangeEvent
     {
         public AppManager.AppPhase newPhase; // The new game phase
@@ -48,19 +58,15 @@ public class AppManager : MonoBehaviour
     public delegate void OnAppPhaseChange(AppPhaseChangeEvent e);
     public OnAppPhaseChange OnAppPhaseChanged; // Event variable
 
-    public AppPhase PreviousPhase()
-    {
-        return previousPhase;
-    }
+    #endregion
+
 
     // Start is called before the first frame update
     void Start()
     {
         UpdatePhase(AppPhase.Startup);
-       // UIManager.Instance.HideAll();  // Hide all UI elements at the start
-        ///UIManager.Instance.Show("MainMenu");  // Show the main menu UI
-
     }
+
     public static AppManager Instance
     {
         get
@@ -96,12 +102,10 @@ public class AppManager : MonoBehaviour
 
                 if(result == DialogButtonType.Positive)
                 {
-                    Debug.Log("view tutorial");
                     UpdatePhase(AppPhase.Tutorial);//calling update phase for the tutorial
                 }
                 else
                 {
-                    Debug.Log("Main Menu . No tutorial");
                     TriggerAppPhaseChange();
                     UpdatePhase(AppPhase.MainMenu);//calling update phase for the tutorial
                 }
@@ -120,35 +124,80 @@ public class AppManager : MonoBehaviour
                 break;
 
             case AppPhase.MainMenu:
-                // Handle main menu logic
 
                 currentPhase = AppPhase.MainMenu;
                 TriggerAppPhaseChange();
 
                 break;
+
             case AppPhase.Lobby_List_Design:
                 // Handle tutorial logic
                 currentPhase = AppPhase.Lobby_List_Design;
 
+                LoadingManager.Instance.SetLoadingText("Loading Lobbies");
+                LoadingManager.Instance.EnableLoadingScreen();
+
+                await Task.Delay(5000);
+
+                LoadingManager.Instance.DisableLoadingScreen();
+
+
                 break;
+
             case AppPhase.Lobby_List_Customize:
                 // Handle tutorial logic
                 currentPhase = AppPhase.Lobby_List_Customize;
 
+                LoadingManager.Instance.SetLoadingText("Loading Lobbies");
+                LoadingManager.Instance.EnableLoadingScreen();
+
+                await Task.Delay(5000);
+
+                LoadingManager.Instance.DisableLoadingScreen();
+
+                TriggerAppPhaseChange();
+
                 break;
+
             case AppPhase.Lobby_Customize:
                 // Handle tutorial logic
                 currentPhase = AppPhase.Lobby_Customize;
 
+                LoadingManager.Instance.SetLoadingText("Loading Lobby");
+                LoadingManager.Instance.EnableLoadingScreen();
+
+                await Task.Delay(5000);
+
+                LoadingManager.Instance.DisableLoadingScreen();
+
+                TriggerAppPhaseChange();
+
                 break;
+
             case AppPhase.Lobby_Design:
                 // Handle tutorial logic
                 currentPhase = AppPhase.Lobby_Design;
 
+                LoadingManager.Instance.SetLoadingText("Loading Lobby");
+                LoadingManager.Instance.EnableLoadingScreen();
+
+                await Task.Delay(5000);
+
+                LoadingManager.Instance.DisableLoadingScreen();
+
+                TriggerAppPhaseChange();
                 break;
+
             case AppPhase.Customize_P1:
                 // Handle tutorial logic
                 currentPhase = AppPhase.Customize_P1;
+
+                LoadingManager.Instance.SetLoadingText("Loading Customize Interface");
+                LoadingManager.Instance.EnableLoadingScreen();
+
+                await Task.Delay(3000);
+
+                LoadingManager.Instance.DisableLoadingScreen();
 
                 TriggerAppPhaseChange();
 
@@ -157,6 +206,14 @@ public class AppManager : MonoBehaviour
             case AppPhase.Design_P1:
                 // Handle tutorial logic
                 currentPhase = AppPhase.Design_P1;
+
+
+                LoadingManager.Instance.SetLoadingText("Loading Design Interface");
+                LoadingManager.Instance.EnableLoadingScreen();
+
+                await Task.Delay(3000);
+
+                LoadingManager.Instance.DisableLoadingScreen();
 
                 TriggerAppPhaseChange();
                 break;
@@ -168,11 +225,27 @@ public class AppManager : MonoBehaviour
                 TriggerAppPhaseChange();
 
                 break;
+
             case AppPhase.Design_P2:
                 // Handle tutorial logic
                 currentPhase = AppPhase.Design_P2;
 
                 TriggerAppPhaseChange();
+
+                break;
+
+            case AppPhase.Saving_Design:
+                // Handle tutorial logic
+                currentPhase = AppPhase.Design_P2;
+
+                LoadingManager.Instance.SetLoadingText("Saving Design");
+                LoadingManager.Instance.EnableLoadingScreen();
+
+                await Task.Delay(5000);
+
+                LoadingManager.Instance.DisableLoadingScreen();
+
+                //TriggerAppPhaseChange();
 
                 break;
 
@@ -185,7 +258,6 @@ public class AppManager : MonoBehaviour
         }
 
         //trigger app phase changed event
-        Debug.Log("Design Phase"+currentPhase);
         TriggerAppPhaseChange();
 
     }
@@ -198,7 +270,9 @@ public class AppManager : MonoBehaviour
         }
     }
 
+    #region setPhase Functions
 
+    //Changes AppPhase Main Menu -> Lobby_list
     public void setPhaseLobbyList()
     {
         if(LobbyManager.Instance.sessionMode == LobbyManager.SessionMode.Design)
@@ -211,6 +285,7 @@ public class AppManager : MonoBehaviour
         }
     }
 
+    //Changes AppPhase Lobby_list -> Lobby
     public void setPhaseLobby()
     {
         if (LobbyManager.Instance.sessionMode == LobbyManager.SessionMode.Design)
@@ -223,6 +298,7 @@ public class AppManager : MonoBehaviour
         }
     }
 
+    //Changes AppPhase Lobby -> P1 (Design or Customize)
     public void setPhase()
     {
         if (LobbyManager.Instance.sessionMode == LobbyManager.SessionMode.Design)
@@ -235,6 +311,7 @@ public class AppManager : MonoBehaviour
         }
     }
 
+    //Changes AppPhase P1 (Design or Customize) -> P2
     public void setNextPhase()
     {
         if (LobbyManager.Instance.sessionMode == LobbyManager.SessionMode.Design)
@@ -246,6 +323,8 @@ public class AppManager : MonoBehaviour
             UpdatePhase(AppPhase.Customize_P2);
         }
     }
+    
+    #endregion
     public async Task<DialogButtonType> StartApp()
     {
 
@@ -253,8 +332,4 @@ public class AppManager : MonoBehaviour
         return result;
     }
 
-   /* public async Task<int> Design_P1()
-    {
-        await 
-    }*/
 }

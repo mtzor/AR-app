@@ -5,6 +5,11 @@ using UnityEngine;
 public class Module : NetworkBehaviour
 {
     public ModuleScriptable moduleData; // Information about the module, like its name or ID.
+
+
+    public Animator animator;
+    public string clipName;
+
     private bool isPlaced = false;
     private Renderer moduleRenderer;
 
@@ -18,7 +23,11 @@ public class Module : NetworkBehaviour
     [SerializeField] private bool isRectangular = false; // Flag to determine if the module is rectangular
     private void Start()
     {
+        modCounter = 0;
         moduleRenderer = GetComponent<Renderer>();
+        animator = GetComponent<Animator>();
+
+        animator.enabled = false;
         initialPosition = transform.position;  // Store the initial position
     }
 
@@ -28,6 +37,7 @@ public class Module : NetworkBehaviour
 
         BuildingArea area = other.GetComponent<BuildingArea>();
 
+        //checks if area is a smaller area inside the occupied area occupy this as well
         if (area != null && !area.IsOccupied && area.AreaID != this.moduleData.Name && IsRotationValid(area))
         {
             //Debug.Log("Entered fitting area Encapsulated: " + area.AreaID);
@@ -37,20 +47,19 @@ public class Module : NetworkBehaviour
 
         if (area != null && !area.IsOccupied && area.AreaID == this.moduleData.Name && IsRotationValid(area))
         {
-            DesignManager.Instance.AddArea(moduleData.Area);
+           // DesignManager.Instance.AddArea(moduleData.Area);
             SetLastValidArea(area);
             ChangeColor(true);
             //Debug.Log("Entered fitting area: " + area.AreaID);
         }
     }
-
     private void OnTriggerStay(Collider other)
     {
         if (isPlaced) return;
 
         BuildingArea area = other.GetComponent<BuildingArea>();
 
-       // Debug.Log("Trigger stay: " + area.AreaID+" Area occupied"+area.IsOccupied);
+        // Debug.Log("Trigger stay: " + area.AreaID+" Area occupied"+area.IsOccupied);
         if (area != null && !area.IsOccupied && area.AreaID == this.moduleData.Name && IsRotationValid(area))
         {
             if (area != lastValidArea)
@@ -67,7 +76,6 @@ public class Module : NetworkBehaviour
             isInsideValidArea = false;
         }
     }
-
     private void OnTriggerExit(Collider other)
     {
         BuildingArea area = other.GetComponent<BuildingArea>();
@@ -81,9 +89,16 @@ public class Module : NetworkBehaviour
 
         if (isPlaced) return;
 
+        if (area != null && area.AreaID == this.moduleData.Name && IsRotationValid(area))
+        {
+            //Debug.Log("Vacated fitting area encaapsulated: " + area.AreaID);
+            area.VacateServerRpc();
+            //DesignManager.Instance.SubtractArea(moduleData.Area);
+
+        }
+
         if (area != null && area == lastValidArea)
         {
-            DesignManager.Instance.SubtractArea(moduleData.Area);
             // If exiting the last valid area, revert its material and flag
             RevertLastValidArea();
             ChangeColor(false); // Ensure the module's material changes to nofitMaterial
@@ -134,29 +149,51 @@ public class Module : NetworkBehaviour
         if (lastValidArea != null)
         {
             lastValidArea.RevertAreaMaterialClientRpc();
+            lastValidArea.VacateServerRpc();
             lastValidArea = null;
             isInsideValidArea = false;
         }
     }
 
-    private void SnapToArea(BuildingArea area)
+    private int modCounter;
+    private void SnapToArea(BuildingArea area)     
     {
-        Debug.Log("Snapping to area: " + area.AreaID);
-        // Snap the module to the exact position and rotation of the BuildingArea
-        transform.position = area.transform.position;
-        transform.rotation = area.transform.rotation;
+            // Snap the module to the exact position and rotation of the BuildingArea
+            transform.position = area.transform.position;
+            transform.rotation = area.transform.rotation;
 
-        // Mark the module as placed and the area as occupied
-        isPlaced = true;
-        area.OccupyServerRpc();
+            // Mark the module as placed and the area as occupied
+            isPlaced = true;
+            area.OccupyServerRpc();
 
-        // Revert the area to its original material after snapping
-        area.RevertAreaMaterialClientRpc();
+            // Revert the area to its original material after snapping
+            area.RevertAreaMaterialClientRpc();
 
-        // Make the module stationary
-        GetComponent<Rigidbody>().isKinematic = true;
-        GetComponent<ObjectManipulator>().enabled = false;
+            // Make the module stationary
+            GetComponent<Rigidbody>().isKinematic = true;
+            GetComponent<ObjectManipulator>().enabled = false;
+
+        // Add the area (of the same floor) when the module is fully snapped in place
+        Debug.Log("SNAPPPING");
+        DesignNetworkSyncScript.Instance.AddAreaServerRPC(0,moduleData.Area[0]);
+
+        ModuleData data = new ModuleData(this.gameObject);
+        DesignNetworkSyncScript.Instance.SaveModuleServerRPC(data);
+
+        if (modCounter > 0)
+        {
+          //  DesignNetworkSyncScript.Instance.LoadAllModulesServerRPC();
+        }
+
+        if (moduleData.Area.Length>1)//when the module has a second floor
+        {   // Add the area of the next floor when the module is fully snapped in place
+            DesignNetworkSyncScript.Instance.AddAreaServerRPC(1, moduleData.Area[0]);
+        }
+
+        modCounter++;
     }
+
+    
 
     private void ChangeColor(bool fits)
     {
@@ -172,14 +209,21 @@ public class Module : NetworkBehaviour
 
         if (!isRectangular)
         {
-            //Debug.Log("Not rectangular rotation" + Mathf.Abs(moduleYRotation - areaYRotation));
+            //Debug.Log("NOT RECTANGULAR Module Y Rotation: " + moduleYRotation + " Area Y Rotation: " + areaYRotation + "The result is " + Mathf.Abs(moduleYRotation - areaYRotation));
             return Mathf.Abs(moduleYRotation - areaYRotation) < 1f; // Allow small tolerance due to floating point errors
         }
         else { 
-           // Debug.Log("Module Y Rotation: " + moduleYRotation + " Area Y Rotation: " + areaYRotation+"The result is "+ Mathf.Abs(moduleYRotation - areaYRotation));
+           //Debug.Log("Module Y Rotation: " + moduleYRotation + " Area Y Rotation: " + areaYRotation+"The result is "+ Mathf.Abs(moduleYRotation - areaYRotation));
             return (Mathf.Abs(moduleYRotation - areaYRotation) < 1f || (Mathf.Abs(moduleYRotation - areaYRotation)> 90f && Mathf.Abs(moduleYRotation - areaYRotation) <181f));
         } // Allow small tolerance due to floating point errors
     }
+
+    [ServerRpc(RequireOwnership = false)]
+
+    public void DestroyModuleServerRPC()
+    {
+        Destroy(gameObject);
+    } 
 
 
 }

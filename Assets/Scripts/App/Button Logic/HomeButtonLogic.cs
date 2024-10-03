@@ -50,5 +50,7 @@ public class HomeButtonLogic : MonoBehaviour
         //open home interface
         AppManager.Instance.UpdatePhase(AppManager.AppPhase.MainMenu);
 
+
+
     }
 }

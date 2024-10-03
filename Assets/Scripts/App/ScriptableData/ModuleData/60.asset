@@ -12,7 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4f6a16b2b6354247a6e4896e6d7200a, type: 3}
   m_Name: 60
   m_EditorClassIdentifier: 
-  moduleID: 3
+  moduleID: 1
   Name: 60
   Size: {x: 0.1, y: 0.03, z: 0.06}
-  Area: 60
+  Area: 3c000000
+  Animation: {fileID: 0}
+  clipName: 
