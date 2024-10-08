@@ -164,11 +164,17 @@ public class UIManager : MonoBehaviour
                 break;
 
             case AppManager.AppPhase.Design_P2:
-                HideAll();
-                Show("Design_P2 UI");
+
                 currentInterface = "Design_P2 UI";
+                HideAll();
                 break;
 
+            case AppManager.AppPhase.Saving_Design:
+
+                currentInterface = "Saving_Design";
+                HideAll();
+                Show("MainMenu");
+                break;
             case AppManager.AppPhase.HomeDialogue:
                 HideAll();
                 break;

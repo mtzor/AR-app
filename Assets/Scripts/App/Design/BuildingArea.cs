@@ -7,12 +7,16 @@ public class BuildingArea : NetworkBehaviour
     [SerializeField] private string areaID; // Unique identifier for the area
     [SerializeField] private bool isOccupied = false;
 
+    [SerializeField] private int floorNo;
+
     [SerializeField] private Material highlightMaterial; // Material to highlight the valid BuildingArea
 
 
     private Material originalAreaMaterial;   // To store the original material of the BuildingArea
 
     public NetworkVariable<bool> isOccupiedNet = new NetworkVariable<bool>();
+
+    public int FloorNo { get => floorNo; set => floorNo = value; }
 
     public bool IsOccupied { get => isOccupied; set => isOccupied = value; }
     private Renderer areaRenderer;
@@ -54,6 +58,7 @@ public class BuildingArea : NetworkBehaviour
     public void RevertAreaMaterialClientRpc()
     {
         this.GetComponent<Renderer>().material = originalAreaMaterial;
+        Debug.Log("Reverting area: "+areaID);
     }
 
 }

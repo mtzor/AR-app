@@ -7,6 +7,8 @@ using MixedReality.Toolkit.UX;
 
 public class NetworkSpawner : NetworkBehaviour
 {
+    private static NetworkSpawner _instance;
+
     [SerializeField] private Transform buildingPrefab; // Prefab to spawn
     [SerializeField] private Transform buildingContainer; // Parent container for the spawned building
     [SerializeField] private PressableButton spawnButton; // UI Button to trigger the spawn
@@ -14,6 +16,22 @@ public class NetworkSpawner : NetworkBehaviour
     private Transform spawnedBuilding;
     private NetworkObject networkObject;
 
+    public static NetworkSpawner Instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                _instance = FindObjectOfType<NetworkSpawner>();
+                if (_instance == null)
+                {
+                    GameObject networkSpawnerManagerObject = new GameObject("NetworkSpawner");
+                    _instance = networkSpawnerManagerObject.AddComponent<NetworkSpawner>();
+                }
+            }
+            return _instance;
+        }
+    }
     void Start()
     {
         // Ensure the button is set up to trigger the building spawn
@@ -56,6 +74,23 @@ public class NetworkSpawner : NetworkBehaviour
         }
     }
 
+    [ServerRpc]
+    public void RequestDestroyBuildingServerRpc(ServerRpcParams rpcParams = default)
+    {
+        if (IsServer)
+        {
+            DestroyBuildingOnServer(rpcParams.Receive.SenderClientId);
+        }
+        else
+        {
+            Debug.LogWarning("Only the server can spawn buildings.");
+        }
+    }
+
+    private void DestroyBuildingOnServer(ulong clientId)
+    {
+        networkObject.Despawn(destroy:true);
+    }
     private void SpawnBuildingOnServer(ulong clientId)
     {
         Debug.Log("Spawning building on the server...");

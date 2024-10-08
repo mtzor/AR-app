@@ -88,7 +88,7 @@ public class AppManager : MonoBehaviour
         }
     }
 
-    public async void UpdatePhase(AppPhase nextPhase)
+    public async Task UpdatePhase(AppPhase nextPhase)
     {
         previousPhase = currentPhase;//updating previous phase
 
@@ -126,6 +126,8 @@ public class AppManager : MonoBehaviour
             case AppPhase.MainMenu:
 
                 currentPhase = AppPhase.MainMenu;
+
+                Debug.Log("Update phase Main menu");
                 TriggerAppPhaseChange();
 
                 break;
@@ -136,9 +138,9 @@ public class AppManager : MonoBehaviour
 
                 LoadingManager.Instance.SetLoadingText("Loading Lobbies");
                 LoadingManager.Instance.EnableLoadingScreen();
-
-                await Task.Delay(5000);
-
+                               
+                    await Task.Delay(3000);
+               
                 LoadingManager.Instance.DisableLoadingScreen();
 
 
@@ -151,7 +153,10 @@ public class AppManager : MonoBehaviour
                 LoadingManager.Instance.SetLoadingText("Loading Lobbies");
                 LoadingManager.Instance.EnableLoadingScreen();
 
-                await Task.Delay(5000);
+                while (!LobbyManager.Instance.LobbyCreated && !LobbyManager.Instance.LobbyJoined)
+                {
+                    await Task.Delay(200);
+                }
 
                 LoadingManager.Instance.DisableLoadingScreen();
 
@@ -181,8 +186,11 @@ public class AppManager : MonoBehaviour
                 LoadingManager.Instance.SetLoadingText("Loading Lobby");
                 LoadingManager.Instance.EnableLoadingScreen();
 
-                await Task.Delay(5000);
-
+                while (!LobbyManager.Instance.LobbyCreated && !LobbyManager.Instance.LobbyJoined)
+                {
+                    await Task.Delay(200);
+                }
+                
                 LoadingManager.Instance.DisableLoadingScreen();
 
                 TriggerAppPhaseChange();
@@ -192,10 +200,13 @@ public class AppManager : MonoBehaviour
                 // Handle tutorial logic
                 currentPhase = AppPhase.Customize_P1;
 
-                LoadingManager.Instance.SetLoadingText("Loading Customize Interface");
+                LoadingManager.Instance.SetLoadingText("Loading Lobby");
                 LoadingManager.Instance.EnableLoadingScreen();
 
-                await Task.Delay(3000);
+                while (!LobbyManager.Instance.LobbyCreated && !LobbyManager.Instance.LobbyJoined)
+                {
+                    await Task.Delay(200);
+                }
 
                 LoadingManager.Instance.DisableLoadingScreen();
 
@@ -236,7 +247,7 @@ public class AppManager : MonoBehaviour
 
             case AppPhase.Saving_Design:
                 // Handle tutorial logic
-                currentPhase = AppPhase.Design_P2;
+                currentPhase = AppPhase.Saving_Design;
 
                 LoadingManager.Instance.SetLoadingText("Saving Design");
                 LoadingManager.Instance.EnableLoadingScreen();
@@ -244,6 +255,8 @@ public class AppManager : MonoBehaviour
                 await Task.Delay(5000);
 
                 LoadingManager.Instance.DisableLoadingScreen();
+
+                UpdatePhase(AppPhase.MainMenu);
 
                 //TriggerAppPhaseChange();
 

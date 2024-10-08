@@ -46,7 +46,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2819618444
+  GlobalObjectIdHash: 1814917187
   InScenePlacedSourceGlobalObjectIdHash: 1814917187
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -252,7 +252,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2048574659063372298}
-  - {fileID: 8315778001140007849}
+  - {fileID: 8547588349221551051}
   - {fileID: 5259667926274846403}
   - {fileID: 1504523018264966499}
   m_Father: {fileID: 7947971425215676353}
@@ -1131,9 +1131,9 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 866b835da7e81374fbbb1606d6191d23, type: 3}
---- !u!224 &8315778001140007849 stripped
+--- !u!224 &8547588349221551051 stripped
 RectTransform:
-  m_CorrespondingSourceObject: {fileID: 7194030141799976583, guid: 866b835da7e81374fbbb1606d6191d23, type: 3}
+  m_CorrespondingSourceObject: {fileID: 7363071020956890853, guid: 866b835da7e81374fbbb1606d6191d23, type: 3}
   m_PrefabInstance: {fileID: 1202953974270233902}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &2799255225313029926

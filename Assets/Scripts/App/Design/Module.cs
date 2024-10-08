@@ -6,6 +6,7 @@ public class Module : NetworkBehaviour
 {
     public ModuleScriptable moduleData; // Information about the module, like its name or ID.
 
+    public NetworkVariable<int> FloorNo = new NetworkVariable<int>(0);
 
     public Animator animator;
     public string clipName;
@@ -21,8 +22,10 @@ public class Module : NetworkBehaviour
     private bool isInsideValidArea = false;  // Flag to determine if the module is in a valid area
 
     [SerializeField] private bool isRectangular = false; // Flag to determine if the module is rectangular
+
     private void Start()
     {
+        FloorNo.OnValueChanged += OnFloorNoChanged;
         modCounter = 0;
         moduleRenderer = GetComponent<Renderer>();
         animator = GetComponent<Animator>();
@@ -30,7 +33,12 @@ public class Module : NetworkBehaviour
         animator.enabled = false;
         initialPosition = transform.position;  // Store the initial position
     }
-
+    private void OnFloorNoChanged(int oldValue, int newValue)
+    {
+        // Update the module state or any UI elements based on the new FloorNo
+        Debug.Log($"Floor No updated from {oldValue} to {newValue}");
+        // Add additional logic here if needed
+    }
     private void OnTriggerEnter(Collider other)
     {
         if (isPlaced) return;
@@ -38,14 +46,14 @@ public class Module : NetworkBehaviour
         BuildingArea area = other.GetComponent<BuildingArea>();
 
         //checks if area is a smaller area inside the occupied area occupy this as well
-        if (area != null && !area.IsOccupied && area.AreaID != this.moduleData.Name && IsRotationValid(area))
+        if (area != null && !area.IsOccupied && area.AreaID != this.moduleData.Name && IsRotationValid(area) && area.FloorNo == this.FloorNo.Value)
         {
             //Debug.Log("Entered fitting area Encapsulated: " + area.AreaID);
             area.OccupyServerRpc();
 
         }
 
-        if (area != null && !area.IsOccupied && area.AreaID == this.moduleData.Name && IsRotationValid(area))
+        if (area != null && !area.IsOccupied && area.AreaID == this.moduleData.Name && IsRotationValid(area) && area.FloorNo == this.FloorNo.Value)
         {
            // DesignManager.Instance.AddArea(moduleData.Area);
             SetLastValidArea(area);
@@ -60,7 +68,7 @@ public class Module : NetworkBehaviour
         BuildingArea area = other.GetComponent<BuildingArea>();
 
         // Debug.Log("Trigger stay: " + area.AreaID+" Area occupied"+area.IsOccupied);
-        if (area != null && !area.IsOccupied && area.AreaID == this.moduleData.Name && IsRotationValid(area))
+        if (area != null && !area.IsOccupied && area.AreaID == this.moduleData.Name && IsRotationValid(area)&& area.FloorNo== this.FloorNo.Value)
         {
             if (area != lastValidArea)
             {
@@ -80,18 +88,18 @@ public class Module : NetworkBehaviour
     {
         BuildingArea area = other.GetComponent<BuildingArea>();
 
-        if (area != null && area.IsOccupied && area.AreaID != this.moduleData.Name && IsRotationValid(area))
+        if (area != null && area.IsOccupied && area.AreaID != this.moduleData.Name && IsRotationValid(area) && area.FloorNo == this.FloorNo.Value)
         {
-            //Debug.Log("Vacated fitting area encaapsulated: " + area.AreaID);
+            Debug.Log("Vacated fitting area encaapsulated: " + area.AreaID);
             area.VacateServerRpc();
 
         }
 
         if (isPlaced) return;
 
-        if (area != null && area.AreaID == this.moduleData.Name && IsRotationValid(area))
+        if (area != null && area.AreaID == this.moduleData.Name && IsRotationValid(area) && area.FloorNo == this.FloorNo.Value)
         {
-            //Debug.Log("Vacated fitting area encaapsulated: " + area.AreaID);
+            Debug.Log("Vacated fitting area encaapsulated: " + area.AreaID);
             area.VacateServerRpc();
             //DesignManager.Instance.SubtractArea(moduleData.Area);
 
@@ -102,7 +110,7 @@ public class Module : NetworkBehaviour
             // If exiting the last valid area, revert its material and flag
             RevertLastValidArea();
             ChangeColor(false); // Ensure the module's material changes to nofitMaterial
-           // Debug.Log("Exited fitting area: " + area.AreaID);
+            Debug.Log("Exited fitting area: " + area.AreaID);
             isInsideValidArea = false;
         }
     }
@@ -156,6 +164,9 @@ public class Module : NetworkBehaviour
     }
 
     private int modCounter;
+
+
+
     private void SnapToArea(BuildingArea area)     
     {
             // Snap the module to the exact position and rotation of the BuildingArea
@@ -191,9 +202,15 @@ public class Module : NetworkBehaviour
         }
 
         modCounter++;
+
+        RevertLastValidArea();
+
+        // This ensures that the current area is also reverted even if it wasn't the lastValidArea
+        lastValidArea = null; // Reset the reference
+        isInsideValidArea = false; // Clear the flag to avoid unexpected behaviors later
     }
 
-    
+
 
     private void ChangeColor(bool fits)
     {

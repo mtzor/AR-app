@@ -146,17 +146,10 @@ public class DesignNetworkSyncScript : NetworkBehaviour // Implement IDisposable
         DesignManager.Instance.FloorCount = newValue;
     }
 
-    [ServerRpc(RequireOwnership = false)]
-    public void AddFloorServerRpc()
-    {
-        firstModuleOfFloor = true;
-        currentFloor++; // Increasing floor number
-        floorNo.Value = currentFloor; // Updating floor number network variable
-    }
-
-    [ServerRpc(RequireOwnership = false)]
-
+  
     #region Next Floor Button Logic
+
+    [ServerRpc(RequireOwnership = false)]
     public void DeactivateNextFloorBtnServerRpc()
     {
         floorBtnActive = false; // Deactivate next floor button
@@ -181,6 +174,14 @@ public class DesignNetworkSyncScript : NetworkBehaviour // Implement IDisposable
         Debug.Log("Next Floor Button Pressed");
     }
 
+    [ServerRpc(RequireOwnership = false)]
+    public void AddFloorServerRpc()
+    {
+        firstModuleOfFloor = true;
+        currentFloor++; // Increasing floor number
+        floorNo.Value = currentFloor; // Updating floor number network variable
+    }
+
     #endregion
 
     #region Close Lobby Button Logic
@@ -200,36 +201,53 @@ public class DesignNetworkSyncScript : NetworkBehaviour // Implement IDisposable
         CloseLobbyBtn.gameObject.SetActive(closeLobbyBtnActive);
     }
 
-
-    public void OnCloseLobbyBtnPressed()
+    public void OnCloseButtonPressed()
     {
+        _ = OnCloseLobbyBtnPressedAsync();
+    }
+
+    public async Task OnCloseLobbyBtnPressedAsync()
+    {
+        Debug.Log("In closse lobby async!1!");
         //deactivate design interface
         Design_P2_interface.SetActive(false);
 
         // Deactivate next floor button and add the next floor
         DeactivateCloseLobbyBtnServerRpc();
 
-        AppManager.Instance.UpdatePhase(AppManager.AppPhase.Saving_Design);
+        PropagatePhaseUpdateClientRpc(AppManager.AppPhase.Saving_Design);
 
-        //create customize lobby
+        Debug.Log("Saving Design");
         saveDesignServerRPC();
 
+        Debug.Log("Destroying Modules");
+        ModuleSpawner.Instance.DestroySpawnedModulesServerRPC();
+
+        Debug.Log("Toggling off Design");
+        DesignNetworkSyncScript.Instance.buildingHollow.SetActive(false);
+        DesignNetworkSyncScript.Instance.Design_P2_interface.SetActive(false);
+
+
+        NetworkSpawner.Instance.RequestDestroyBuildingServerRpc();
+
         CloseLobbyServerRPC();
-
-        
-
-        AppManager.Instance.UpdatePhase(AppManager.AppPhase.MainMenu);
-
-        //create lobby save info
 
         Debug.Log("Close Lobby Button Pressed");
     }
 
+
+
+
     [ServerRpc(RequireOwnership = false)]
     public void saveDesignServerRPC()
     {
-       // LobbyListUI.Instance.SetSessionMode(LobbyManager.SessionMode.Customize.ToString());
-        //LobbyListUI.Instance.CreateLobbyButtonClick();
+       saveClientClientRPC();
+    }
+
+    [ClientRpc(RequireOwnership = false)]
+    public void saveClientClientRPC()
+    {
+        SaveSystem.SaveDesignFile();
     }
 
 
@@ -302,4 +320,18 @@ public class DesignNetworkSyncScript : NetworkBehaviour // Implement IDisposable
         }
     }
     #endregion
+
+    [ClientRpc(RequireOwnership =false)]
+    public void PropagatePhaseUpdateClientRpc(AppManager.AppPhase phase)
+    {
+       AppManager.Instance.UpdatePhase(phase);
+    }
+
+
+    [ClientRpc(RequireOwnership = false)]
+    public void MainMenuClientRpc()
+    {
+        AppManager.Instance.UpdatePhase(AppManager.AppPhase.MainMenu);
+    }
+
 }

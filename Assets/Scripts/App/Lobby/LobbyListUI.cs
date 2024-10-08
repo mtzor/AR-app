@@ -74,6 +74,9 @@ public class LobbyListUI : MonoBehaviour {
         UpdateLobbyList(e.lobbyList);
     }
 
+    private bool lobbiesRefreshed = false;
+
+    public bool LobbiesRefreshed { set { lobbiesRefreshed = value; } get { return lobbiesRefreshed; } }
     private void UpdateLobbyList(List<Lobby> lobbyList) {
         foreach (Transform child in container) {
             if (child == lobbySingleTemplate) continue;
@@ -88,6 +91,9 @@ public class LobbyListUI : MonoBehaviour {
             LobbyListSingleUI lobbyListSingleUI = lobbySingleTransform.GetComponent<LobbyListSingleUI>();
             lobbyListSingleUI.UpdateLobby(lobby);
         }
+
+        lobbiesRefreshed = true;
+
     }
 
     private void RefreshButtonClick() {
