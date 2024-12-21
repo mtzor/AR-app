@@ -137,7 +137,11 @@ PlayerSettings:
   vulkanEnableCommandBufferRecycling: 1
   loadStoreDebugModeEnabled: 0
   bundleVersion: 0.1
-  preloadedAssets: []
+  preloadedAssets:
+  - {fileID: 11400000, guid: c677e5c4eb85b7849a8da406775c299d, type: 2}
+  - {fileID: -3435618157395692872, guid: 84e3d9d172378d246a40c7e670bea12c, type: 2}
+  - {fileID: 11400000, guid: e678c5cfafbcb45429455c72f30a5682, type: 2}
+  - {fileID: -5509965102687344922, guid: 99d242fe3722cd5408e8540ab3349d9e, type: 2}
   metroInputSource: 0
   wsaTransparentSwapchain: 0
   m_HolographicPauseOnTrackingLoss: 1
@@ -686,11 +690,11 @@ PlayerSettings:
   m_MobileRenderingPath: 1
   metroPackageName: Template3D
   metroPackageVersion: 1.0.0.0
-  metroCertificatePath: 
+  metroCertificatePath: Assets/WSATestCertificate.pfx
   metroCertificatePassword: 
-  metroCertificateSubject: 
-  metroCertificateIssuer: 
-  metroCertificateNotAfter: 0000000000000000
+  metroCertificateSubject: DefaultCompany
+  metroCertificateIssuer: DefaultCompany
+  metroCertificateNotAfter: 00da56be3b3ddc01
   metroApplicationDescription: Template_3D
   wsaImages: {}
   metroTileShortName: AR-app

@@ -23,6 +23,7 @@ GameObject:
   - component: {fileID: -170914504281437787}
   - component: {fileID: -3325378584777891402}
   - component: {fileID: 3785416653158414102}
+  - component: {fileID: -8322817809864004290}
   m_Layer: 6
   m_Name: 144
   m_TagString: Untagged
@@ -869,11 +870,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moduleData: {fileID: 11400000, guid: 5f7a9c1e565fc5f48970d65e8f3bc957, type: 2}
+  FloorNo:
+    m_InternalValue: 0
   animator: {fileID: 0}
   clipName: delete144
   fitMaterial: {fileID: 2100000, guid: ecf898134fc873c48b1263a093f12178, type: 2}
   nofitMaterial: {fileID: 2100000, guid: db61b94b23e5fb444b86c231d13e46ef, type: 2}
   isRectangular: 0
+  positionThreshold: 0.1
+  rotationThreshold: 1
 --- !u!54 &5614320138613788321
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -956,13 +961,25 @@ MonoBehaviour:
       m_Calls: []
   m_FirstSelectEntered:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: -8322817809864004290}
+        m_TargetAssemblyTypeName: InteractableModule, Assembly-CSharp
+        m_MethodName: OnGrabInteract
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_LastSelectExited:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: ObjectRotator, Assembly-CSharp
-        m_MethodName: OnManipulationEnded
+      - m_Target: {fileID: -8322817809864004290}
+        m_TargetAssemblyTypeName: InteractableModule, Assembly-CSharp
+        m_MethodName: OnReleaseInteract
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1047,7 +1064,19 @@ MonoBehaviour:
     active: 0
     onEntered:
       m_PersistentCalls:
-        m_Calls: []
+        m_Calls:
+        - m_Target: {fileID: 6361658177750768906}
+          m_TargetAssemblyTypeName: Module, Assembly-CSharp
+          m_MethodName: OnManipulationStarted
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
     onExited:
       m_PersistentCalls:
         m_Calls: []
@@ -1063,7 +1092,19 @@ MonoBehaviour:
     active: 0
     onEntered:
       m_PersistentCalls:
-        m_Calls: []
+        m_Calls:
+        - m_Target: {fileID: 6361658177750768906}
+          m_TargetAssemblyTypeName: Module, Assembly-CSharp
+          m_MethodName: OnManipulationStarted
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
     onExited:
       m_PersistentCalls:
         m_Calls: []
@@ -1071,7 +1112,19 @@ MonoBehaviour:
     active: 0
     onEntered:
       m_PersistentCalls:
-        m_Calls: []
+        m_Calls:
+        - m_Target: {fileID: 6361658177750768906}
+          m_TargetAssemblyTypeName: Module, Assembly-CSharp
+          m_MethodName: OnManipulationStarted
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
     onExited:
       m_PersistentCalls:
         m_Calls: []
@@ -1237,3 +1290,16 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &-8322817809864004290
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1248659912848205637}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 410fd9dc730daf749a00ec03a8c1dcba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  handOffset: {x: 0, y: 0.05, z: 0.3}

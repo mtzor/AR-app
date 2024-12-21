@@ -5,6 +5,10 @@ TagManager:
   serializedVersion: 2
   tags:
   - Floor
+  - Design P1
+  - Design P2
+  - Design P2 Host
+  - Design P1 Host
   layers:
   - Default
   - TransparentFX

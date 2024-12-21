@@ -23,6 +23,7 @@ GameObject:
   - component: {fileID: 1470457697305527441}
   - component: {fileID: 8455228004397268846}
   - component: {fileID: 6092052893597098926}
+  - component: {fileID: 8491140340744437992}
   m_Layer: 6
   m_Name: 90D
   m_TagString: Untagged
@@ -634,7 +635,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2046809628
+  GlobalObjectIdHash: 1899683391
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 1
   SynchronizeTransform: 0
@@ -656,11 +657,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moduleData: {fileID: 11400000, guid: 8a2917c9f7dcd964ba43bb96793178de, type: 2}
+  FloorNo:
+    m_InternalValue: 0
   animator: {fileID: 0}
   clipName: delete90
   fitMaterial: {fileID: 2100000, guid: 4d9634496b867de43ab769506b202b67, type: 2}
   nofitMaterial: {fileID: 2100000, guid: db61b94b23e5fb444b86c231d13e46ef, type: 2}
   isRectangular: 0
+  positionThreshold: 0.001
+  rotationThreshold: 0.1
 --- !u!114 &840400589426446222
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -716,13 +721,25 @@ MonoBehaviour:
       m_Calls: []
   m_FirstSelectEntered:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 8491140340744437992}
+        m_TargetAssemblyTypeName: InteractableModule, Assembly-CSharp
+        m_MethodName: OnGrabInteract
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_LastSelectExited:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: ObjectRotator, Assembly-CSharp
-        m_MethodName: OnManipulationEnded
+      - m_Target: {fileID: 8491140340744437992}
+        m_TargetAssemblyTypeName: InteractableModule, Assembly-CSharp
+        m_MethodName: OnReleaseInteract
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -997,3 +1014,16 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &8491140340744437992
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3063244742253668681}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 410fd9dc730daf749a00ec03a8c1dcba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  handOffset: {x: 0, y: 0.05, z: 0.3}
