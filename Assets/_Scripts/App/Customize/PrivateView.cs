@@ -35,15 +35,20 @@ public class PrivateView :MonoBehaviour, IView
         IsInCompareMode = false;
         IsComplete = false;
     }
-
+    public List<ulong> SharedClients()
+    {
+        return null;
+    }
     public bool IsComplete { get; set; } //complete view flag
     public bool IsShared => false; // Private view flag
     public bool IsInCompareMode { get; set; }
-    public object CurrentItem => items[currentIndex];
+    public Transform GetCurrentItem() {  return currentItem; }
 
+    public void ResetCurrentIndex() { currentIndex = 0; }
     public void SetItems(List<Transform> privateItems) 
     { 
         items=privateItems;
+        Debug.Log("setting items in private view :" + items[0]);
     }
     public void NextItem()
     {
@@ -85,6 +90,11 @@ public class PrivateView :MonoBehaviour, IView
         if (currentItem != null)
         {
             Destroy(currentItem.gameObject);
+
+            if (CustomizeManager.Instance.PrivatePhase == CustomizeManager.CustomizePhase.Customize_layout)
+            {
+                CustomizeManager.Instance.SharedLayoutManager().DespawnAllRooms();
+            }
         }
 
         // Destroy compare item if compare mode is toggled off
@@ -96,7 +106,18 @@ public class PrivateView :MonoBehaviour, IView
 
         
         currentItem = Instantiate(items[currentIndex], layoutContainer);
-        //currentItem.localPosition = Vector3.zero; // Reset local position to the center of the container????
+
+        if (CustomizeManager.Instance.PrivatePhase == CustomizeManager.CustomizePhase.Customize_layout)
+        {
+            CustomizeManager.Instance.currentLayoutManager.RespawnAllRooms();
+        }
+
+        if (CustomizeManager.Instance.PrivatePhase == CustomizeManager.CustomizePhase.Customize_layout)
+        {
+            currentItem.transform.localPosition = new Vector3(0.51f, 0.331f, 0.394f);
+            currentItem.transform.localRotation = Quaternion.Euler(-40f, 0f, 0f);
+            currentItem.transform.localScale = new Vector3(0.02f, 0.02f, 0.02f);
+        }
 
         Debug.Log("Current Item" + currentItem);
 
@@ -154,6 +175,11 @@ public class PrivateView :MonoBehaviour, IView
 
     public async Task FinalizeChoice()
     {
+        if (CustomizeManager.Instance.PrivatePhase == CustomizeManager.CustomizePhase.Customize_layout)
+        {
+            CustomizeManager.Instance.currentLayoutManager.DespawnAllRooms();
+            Destroy(currentItem.gameObject);
+        }
         DialogButtonType answer = await DialogManager.Instance.SpawnDialogWithAsync("Layout selected!", "Would you like to confirm your choice ?", "YES", "NO");
 
         if (answer == DialogButtonType.Positive)
@@ -169,7 +195,11 @@ public class PrivateView :MonoBehaviour, IView
         }
         else if (answer == DialogButtonType.Negative)
         {
-
+            if (CustomizeManager.Instance.PrivatePhase == CustomizeManager.CustomizePhase.Customize_layout)
+            {
+                ShowCurrentItem();
+                CustomizeManager.Instance.currentLayoutManager.RespawnAllRooms();
+            }
             Debug.Log("NEGATIVE");
             ViewManager.Instance.finalizeChoiceBtn.gameObject.SetActive(true);
             selectedIndex = -1;

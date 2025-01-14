@@ -14,7 +14,7 @@ public class UIManager : MonoBehaviour
 
     private string previousInterface;
     public string currentInterface;
-    private GameObject currentSceneHelper;
+    public GameObject currentSceneHelper;
 
 
     public List<GameObject> additionalSceneHelpers;
@@ -98,7 +98,7 @@ public class UIManager : MonoBehaviour
     }
     #endregion
 
-    private void UpdateAppPhaseEvent(AppManager.AppPhaseChangeEvent e)
+    private async void UpdateAppPhaseEvent(AppManager.AppPhaseChangeEvent e)
     {
         previousInterface = currentInterface;
 
@@ -124,13 +124,24 @@ public class UIManager : MonoBehaviour
                 Show("Join/Create Lobby Interface");
                 currentInterface = "Join/Create Lobby Interface";
 
-                SaveSystem.LoadLobbiesFromFolders();
-                break;
+                await SaveSystem.LoadDesignLobbiesFromCloudAsync();
 
+                LobbyManager.Instance.RefreshLobbyList();
+                break;
+            case AppManager.AppPhase.Lobby_List_Visualize:
+                HideAll();
+                Show("Join/Create Lobby Interface");
+                currentInterface = "Join/Create Lobby Interface";
+
+                await SaveSystem.LoadCustomizeLobbiesFromCloudAsync();
+
+                LobbyManager.Instance.RefreshLobbyList();
+                break;
             case AppManager.AppPhase.Lobby_List_Design:
                 HideAll();
                 Show("Join/Create Lobby Interface");
                 currentInterface = "Join/Create Lobby Interface";
+                LobbyManager.Instance.RefreshLobbyList();
                 break;
 
             case AppManager.AppPhase.Lobby_Customize:
@@ -145,16 +156,34 @@ public class UIManager : MonoBehaviour
                 Show("Lobby UI");
                 currentInterface = "Lobby UI";
                 break;
-
-                case AppManager.AppPhase.Customize_Module_Selection:
-
-                currentInterface = "Module Selection Interface";
-                Debug.Log(" UIManager CUSTOMIZE SELECTION");
-
+            case AppManager.AppPhase.Lobby_Visualize:
                 HideAll();
-                Show("Module Selection Interface");
+                Show("Lobby UI");
+                currentInterface = "Lobby UI";
+                break;
+
+
+            case AppManager.AppPhase.Customize_Module_Selection:
+
+                currentInterface = "Dwelling Selection UI";
+                Debug.Log(" Dwelling Selection UI");
+
+                //HideAll();
+                //Show("Module Selection Interface");
 
                 Debug.Log(" UIManager CUSTOMIZE SELECTION AFTER SHOW");
+
+                break;
+
+            case AppManager.AppPhase.Visualize_Module_Selection:
+
+                currentInterface = "Rating Apartment Selection UI";
+                Debug.Log("Rating Apartment Selection UI");
+
+                //HideAll();
+                //Show("Module Selection Interface");
+
+                Debug.Log(" UIManager vizualize SELECTION AFTER SHOW");
 
                 break;
             case AppManager.AppPhase.Customize_P1:
@@ -168,6 +197,7 @@ public class UIManager : MonoBehaviour
                 Show("Customize_P2 UI");
                 currentInterface = "Customize_P2 UI";
 
+                uiElementsDict["Customize_P1 UI"].SetActive(true);
 
                 break;
             case AppManager.AppPhase.Design_P1:
@@ -225,6 +255,13 @@ public class UIManager : MonoBehaviour
                 currentInterface = "Design_P2 UI Host";
 
                 UpdateSceneHelper("Design P2 Host");
+                break;
+
+            case AppManager.AppPhase.Visualize:
+                HideAll();
+                Show("Visualize Interface");
+                currentInterface = "Visualize Interface";
+
                 break;
             case AppManager.AppPhase.Saving_Design:
                 HideAll();
@@ -318,5 +355,12 @@ public class UIManager : MonoBehaviour
             }
            
         }
+    }
+
+
+    public void SetCurrentSceneHelper(GameObject sceneHelper)
+    {
+        currentSceneHelper = sceneHelper;
+        //sceneHelper.gameObject.SetActive(true);
     }
 }

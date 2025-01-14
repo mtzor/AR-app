@@ -16,19 +16,24 @@ public class ViewManager : MonoBehaviour
 
     [SerializeField] public ViewUIController uiController;
 
-    [SerializeField] public TMP_Text completeText;
-    [SerializeField] public GameObject progressIndicator;
+    [SerializeField] public ProgressIndicator progressIndicator;
 
     [SerializeField] public PressableButton finalizeChoiceBtn;
 
     [SerializeField] private PressableButton sharedViewToggle;
     [SerializeField] private TMP_Text sharedViewText;
 
+    [SerializeField] private GameObject privateSceneHelper;
+    [SerializeField] private GameObject sharedSceneHelper;
+    [SerializeField] private GameObject simpleSceneHelper;
+
     public IView currentIVew;
 
     private int selectedItem;
     private bool isShared = false;
 
+    private bool isPrivateComplete = false;
+    private bool isSharedComplete = false;
 
     public bool IsShared{ set; get; }
 
@@ -73,8 +78,9 @@ public class ViewManager : MonoBehaviour
     {
         sharedViewText.text = "Private View";
         currentIVew = privateView;
-
-       // uiController.SetView(currentIVew);
+        UIManager.Instance.SetCurrentSceneHelper(privateSceneHelper);
+        CustomizeManager.Instance.ToggleLocalPlayer(false);
+        // uiController.SetView(currentIVew);
     }
     private void OnSharedViewToggled()
     {
@@ -83,7 +89,6 @@ public class ViewManager : MonoBehaviour
 
         isShared = !isShared;
 
-        CustomizeManager.Instance.setLayoutManager(isShared);
         // Handle view switch externally if necessary
         if (isShared) {
             if (SharedView ==null) {
@@ -91,9 +96,23 @@ public class ViewManager : MonoBehaviour
             }
             sharedViewText.text = "Shared View";
             currentIVew = sharedView;
+            CustomizeManager.Instance.SetCurrentLayoutManager(isShared);
             sharedView.ReportSharedViewState(true);
             uiController.SetView(sharedView);
-            sharedView.ShowCurrentItem();//?????
+            CustomizeManager.Instance.ToggleLocalPlayer(true);
+            if (!currentIVew.IsComplete)
+            {
+                ToggleCompleteView(false);
+                //sharedView.ShowCurrentItem();//?????
+                ShowModel();
+                UIManager.Instance.SetCurrentSceneHelper(sharedSceneHelper);
+            }
+            else
+            {
+                sharedView.DestroyCurrentItem();
+                ToggleCompleteView(true);
+                UIManager.Instance.SetCurrentSceneHelper(simpleSceneHelper);
+            }
             uiController.ToggleCompareModeToggle(false);
         }
         else
@@ -102,10 +121,51 @@ public class ViewManager : MonoBehaviour
             sharedView.ReportSharedViewState(false);
             currentIVew = privateView;
             uiController.SetView(privateView);
-            uiController.ToggleCompareModeToggle(true);
+            CustomizeManager.Instance.SetCurrentLayoutManager(isShared);
+            CustomizeManager.Instance.ToggleLocalPlayer(false);
+            if (!currentIVew.IsComplete)
+            {
+                ToggleCompleteView(false);
+                // privateView.ShowCurrentItem();//?????
+                ShowModel();
+                UIManager.Instance.SetCurrentSceneHelper(privateSceneHelper);
+            }
+            else
+            {
+                privateView.DestroyCurrentItem();
+                ToggleCompleteView(true);
+                UIManager.Instance.SetCurrentSceneHelper(simpleSceneHelper);
+            }
+          
         }
     }
-  
+    public void ToggleCompleteView(bool isActive)
+    {
+        LoadingManager.Instance.SetLoadingText("Complete all views to move to the next stage");
+        if (isActive)
+        {
+            LoadingManager.Instance.EnableLoadingScreen();
+            currentIVew.DestroyCurrentItem();
+        }
+        else
+        {
+            LoadingManager.Instance.DisableLoadingScreen();
+        }
+        if (currentIVew==sharedView && CustomizeManager.Instance.SharedPhase==CustomizeManager.CustomizePhase.Customize_layout || 
+            currentIVew == privateView && CustomizeManager.Instance.PrivatePhase == CustomizeManager.CustomizePhase.Customize_layout
+            ) 
+        {
+            uiController.ToggleBtns(false);
+            uiController.ToggleCompareModeToggle(false);
+            finalizeChoiceBtn.gameObject.SetActive(!isActive);
+        }
+        else
+        {
+            uiController.ToggleBtns(!isActive);
+            uiController.ToggleCompareModeToggle(!isActive);
+            finalizeChoiceBtn.gameObject.SetActive(!isActive);
+        }
+    }
     private void OnFinalizeChoiceBtnPressed()
     {
         OnFinalizeChoiceBtnAsync();
@@ -138,16 +198,68 @@ public class ViewManager : MonoBehaviour
                    CustomizeManager.Instance.SetupRoomLayouts(isShared);
                     finalizeChoiceBtn.gameObject.SetActive(true);
                     CustomizeManager.Instance.ToggleCustomize_P1_UI(true);
+                    LoadingManager.Instance.DisableLoadingScreen();
 
                 }
-                else if (CustomizeManager.Instance.SharedPhase == CustomizeManager.CustomizePhase.Choose_room_layout)
+                else if (CustomizeManager.Instance.SharedPhase == CustomizeManager.CustomizePhase.Choose_room_layout )
                 {
-                    CustomizeManager.Instance.SharedPhase = CustomizeManager.CustomizePhase.Customize_layout;
-                    Debug.Log("Setting the next phase appmanager");
-                    AppManager.Instance.setNextPhase();
-                    CustomizeManager.Instance.ToggleCustomize_P1_UI(false);
-                    CustomizeManager.Instance.ToggleCustomize_P2_UI(true);
-                    CustomizeManager.Instance.SetupCustomizeLayout(isShared);
+                    if (!isSharedComplete)
+                    {
+                        isSharedComplete = true;
+                        ToggleCompleteView(true);
+                        Debug.Log("PROGRESS INDICATOR SHARED");
+                        progressIndicator.ToggleProgressIndicator(true,true);
+                        CustomizeManager.Instance.ToggleCustomize_P1_UI(true);
+                        UIManager.Instance.SetCurrentSceneHelper(simpleSceneHelper);
+                        CustomizeManager.Instance.SharedPhase = CustomizeManager.CustomizePhase.Customize_layout;
+
+                    }
+                    
+                    if(isSharedComplete && isPrivateComplete)
+                    {
+                        //CustomizeManager.Instance.SharedPhase = CustomizeManager.CustomizePhase.Customize_layout;
+                        Debug.Log("Setting the next phase appmanager");
+                        AppManager.Instance.setNextPhase();
+                        //CustomizeManager.Instance.ToggleCustomize_P1_UI(false);
+                        CustomizeManager.Instance.ToggleCustomize_P2_UI(true);
+                        CustomizeManager.Instance.SetupCustomizeLayout(isShared);
+                        CustomizeManager.Instance.SetupCustomizeLayout(!isShared);
+                        LoadingManager.Instance.DisableLoadingScreen();
+
+                        isPrivateComplete = false;
+                        isSharedComplete= false;
+
+                        SetupCustomizeP2Interface();
+
+                    }
+                }
+                else if (CustomizeManager.Instance.PrivatePhase == CustomizeManager.CustomizePhase.Customize_layout)
+                {
+                    if (!isSharedComplete)
+                    {
+                        isSharedComplete = true;
+                        ToggleCompleteView(true);
+
+                        Debug.Log("PROGRESS INDICATOR PRIVATE");
+                        progressIndicator.ToggleProgressIndicator(true, true);
+                        UIManager.Instance.SetCurrentSceneHelper(simpleSceneHelper);
+
+                        //CustomizeManager.Instance.PrivatePhase = CustomizeManager.CustomizePhase.Customize_layout;
+                        //layout manager save the current design
+
+                        CustomizeManager.Instance.currentLayoutManager.DespawnAllRooms();
+                        CustomizeManager.Instance.currentLayoutManager.FinalizeCurrentLayout();
+                    }
+
+                    if (isSharedComplete && isPrivateComplete)
+                    {
+                        Debug.Log("Setting the next phase appmanager");
+                        AppManager.Instance.setNextPhase();
+                        CustomizeManager.Instance.ToggleCustomize_P1_UI(false);
+                        CustomizeManager.Instance.ToggleCustomize_P2_UI(false);
+                        LoadingManager.Instance.DisableLoadingScreen();
+                        Debug.Log("BOTH VIEWS COMPLETE");
+                    }
                 }
 
             }
@@ -164,12 +276,64 @@ public class ViewManager : MonoBehaviour
                 }
                 else if (CustomizeManager.Instance.PrivatePhase == CustomizeManager.CustomizePhase.Choose_room_layout)
                 {
-                    Debug.Log("Setting the next phase appmanager");
-                    CustomizeManager.Instance.PrivatePhase = CustomizeManager.CustomizePhase.Customize_layout;
-                    AppManager.Instance.setNextPhase();
-                    CustomizeManager.Instance.ToggleCustomize_P1_UI(false);
-                    CustomizeManager.Instance.ToggleCustomize_P2_UI(true);
-                    CustomizeManager.Instance.SetupCustomizeLayout(isShared);
+                    if (!isPrivateComplete)
+                    {
+                        isPrivateComplete = true;
+                        ToggleCompleteView(true);
+
+                        Debug.Log("PROGRESS INDICATOR PRIVATE");
+                        progressIndicator.ToggleProgressIndicator(false, true);
+                        UIManager.Instance.SetCurrentSceneHelper(simpleSceneHelper);
+
+                        CustomizeManager.Instance.PrivatePhase = CustomizeManager.CustomizePhase.Customize_layout;
+                        Debug.Log("IS SHARED NOT COMPLETE->COMPLETE");
+                    }
+
+                    if (isSharedComplete && isPrivateComplete)
+                    {
+                        Debug.Log("Setting the next phase appmanager");
+                        // CustomizeManager.Instance.PrivatePhase = CustomizeManager.CustomizePhase.Customize_layout;
+                        AppManager.Instance.setNextPhase();
+                        //CustomizeManager.Instance.ToggleCustomize_P1_UI(false);
+                        CustomizeManager.Instance.ToggleCustomize_P2_UI(true);
+                        CustomizeManager.Instance.SetupCustomizeLayout(isShared);
+                        CustomizeManager.Instance.SetupCustomizeLayout(!isShared);
+                        LoadingManager.Instance.DisableLoadingScreen();
+                        //next previous and compare button off
+
+                        isPrivateComplete = false;
+                        isSharedComplete = false;
+
+                        SetupCustomizeP2Interface();
+                    }
+                }
+                else if (CustomizeManager.Instance.PrivatePhase == CustomizeManager.CustomizePhase.Customize_layout)
+                {
+                    if (!isPrivateComplete)
+                    {
+                        isPrivateComplete = true;
+                        ToggleCompleteView(true);
+
+                        Debug.Log("PROGRESS INDICATOR PRIVATE");
+                        progressIndicator.ToggleProgressIndicator(false, true);
+                        UIManager.Instance.SetCurrentSceneHelper(simpleSceneHelper);
+
+                        //CustomizeManager.Instance.PrivatePhase = CustomizeManager.CustomizePhase.Customize_layout;
+                        //layout manager save the current design
+                        CustomizeManager.Instance.currentLayoutManager.DespawnAllRooms();
+                        CustomizeManager.Instance.currentLayoutManager.FinalizeCurrentLayout();
+                        Debug.Log("IS PRIVATE NOT COMPLETE->COMPLETE");
+                    }
+
+                    if (isSharedComplete && isPrivateComplete)
+                    {
+                        Debug.Log("Setting the next phase appmanager");
+                        AppManager.Instance.setNextPhase();
+                        CustomizeManager.Instance.ToggleCustomize_P1_UI(false);
+                        CustomizeManager.Instance.ToggleCustomize_P2_UI(false);
+                        LoadingManager.Instance.DisableLoadingScreen();
+                        Debug.Log("BOTH VIEWS COMPLETE");
+                    }
                 }
             }
 
@@ -180,4 +344,56 @@ public class ViewManager : MonoBehaviour
         }
     }
     
+    public void SetupCustomizeP2Interface()
+    {
+
+        privateView.ResetCurrentIndex();
+        sharedView.ResetCurrentIndex();
+        CustomizeManager.Instance.ToggleCustomize_P1_UI(true);
+
+        progressIndicator.ToggleProgressIndicator(false,false);
+        progressIndicator.ToggleProgressIndicator(true,false);
+
+
+        //next previous and compare button off
+        uiController.ToggleBtns(false);
+        uiController.ToggleCompareModeToggle(false);
+
+        finalizeChoiceBtn.gameObject.SetActive(true);
+
+        sharedView.DestroyCurrentItem();
+        sharedView.IsComplete = false;
+
+        privateView.DestroyCurrentItem();
+        privateView.IsComplete = false;
+
+        currentIVew.ShowCurrentItem();
+    }
+
+    public void ShowModel()
+    {
+        CustomizeManager.CustomizePhase currentPhase=CustomizeManager.CustomizePhase.Choose_layout;
+
+        if (uiController.CurrentIview == sharedView)
+        {
+            currentPhase = CustomizeManager.Instance.SharedPhase;
+        }
+        else if(uiController.CurrentIview == privateView)
+        {
+            currentPhase = CustomizeManager.Instance.SharedPhase;
+        }
+
+        if (currentPhase == CustomizeManager.CustomizePhase.Customize_layout)
+        {
+            Debug.Log("Display CUSTOMIZE LAYOUT");
+            //CustomizeManager.Instance.CurrentLayoutManager.DisplayLayoutModelServerRPC();
+
+            currentIVew.ShowCurrentItem();
+        }
+        else if(currentPhase == CustomizeManager.CustomizePhase.Choose_layout || currentPhase == CustomizeManager.CustomizePhase.Choose_room_layout)
+        {
+            currentIVew.ShowCurrentItem();
+        }
+    }
 }
+

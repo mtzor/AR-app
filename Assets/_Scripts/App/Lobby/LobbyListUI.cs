@@ -46,12 +46,19 @@ public class LobbyListUI : MonoBehaviour {//class implementing  create /join lob
             createLobbyButton.gameObject.SetActive(false);
             LobbyManager.Instance.RefreshLobbyList(sessionMode);
         }
-        else
+        else if (value == LobbyManager.SessionMode.Design.ToString())
         {
             sessionMode = LobbyManager.SessionMode.Design;
             lobbyBtns.Clear();
             createLobbyButton.gameObject.SetActive(true);
             LobbyManager.Instance.RefreshLobbyList(sessionMode);
+        }else if (value == LobbyManager.SessionMode.Visualize.ToString())
+        {
+            sessionMode = LobbyManager.SessionMode.Visualize;
+            lobbyBtns.Clear();
+            createLobbyButton.gameObject.SetActive(false);
+            LobbyManager.Instance.RefreshLobbyList(sessionMode);
+
         }
     }
 

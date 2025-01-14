@@ -76,9 +76,8 @@ public class SharedView : NetworkBehaviour, IView
     public bool IsShared=> true; //completeview flag
     public bool IsComplete {get; set;} // Shared view flag
     public bool IsInCompareMode { get; set; }
-    public object CurrentItem => items[currentIndex.Value];
-
-
+    public Transform GetCurrentItem() { return currentItem; }
+    public void ResetCurrentIndex() { ResetCurrentIndexServerRPC(); }
     public override void OnNetworkSpawn()
     {
 
@@ -96,6 +95,7 @@ public class SharedView : NetworkBehaviour, IView
         currentIndex.OnValueChanged += OnCurrentIndexChanged;
     }
   
+    public List<ulong> SharedClients() {  return sharedClients; }
 
     public override void OnNetworkDespawn()
     {
@@ -103,6 +103,11 @@ public class SharedView : NetworkBehaviour, IView
         currentIndex.OnValueChanged -= OnCurrentIndexChanged;
     }
 
+    [ServerRpc(RequireOwnership = false)]
+    public void ResetCurrentIndexServerRPC() 
+    {
+        currentIndex.Value = 0;
+    }
     public void NextItem()
     {
         ChangeToNextItemServerRpc();//call server function to chage currentindex and request the spawn
@@ -175,6 +180,10 @@ public class SharedView : NetworkBehaviour, IView
             if (currentItem != null)
             {
                 Destroy(currentItem.gameObject);//destroy previously instantiated item
+                if (CustomizeManager.Instance.SharedPhase == CustomizeManager.CustomizePhase.Customize_layout)
+                {
+                    CustomizeManager.Instance.PrivateLayoutManager().DespawnAllRooms();
+                }
             }
 
             // Destroy compare item if compare mode is toggled off
@@ -183,12 +192,28 @@ public class SharedView : NetworkBehaviour, IView
                 Destroy(compareItemInstance.gameObject); ;//destroy previously instantiated item
                 compareItemInstance = null;
             }
-       
-            Debug.Log("Current index before instantiation" + currentIndex.Value);
-            Debug.Log($"Shared view displaying: {items[currentIndex.Value]}");
-            currentItem = Instantiate(items[currentIndex.Value], layoutContainer);
+            if(currentIndex.Value<=items.Count && currentIndex.Value >= 0)
+            {
+                Debug.Log("Current index before instantiation" + currentIndex.Value);
+                Debug.Log($"Shared view displaying: {items[currentIndex.Value]}");
+                currentItem = Instantiate(items[currentIndex.Value], layoutContainer);
+            }
+            
 
-            if (IsInCompareMode)
+            if (CustomizeManager.Instance.SharedPhase == CustomizeManager.CustomizePhase.Customize_layout)
+            {
+                CustomizeManager.Instance.currentLayoutManager.RespawnAllRooms();
+
+            }
+
+            if (CustomizeManager.Instance.SharedPhase == CustomizeManager.CustomizePhase.Customize_layout)
+                {
+                currentItem.transform.localPosition = new Vector3(0.51f, 0.331f, 0.394f);
+                currentItem.transform.localRotation = Quaternion.Euler(-40f, 0f, 0f);
+                currentItem.transform.localScale = new Vector3(0.02f, 0.02f, 0.02f);
+            }
+
+        if (IsInCompareMode)
             {
                 Debug.Log("Compare Mode Enabled");
 
@@ -301,6 +326,11 @@ public class SharedView : NetworkBehaviour, IView
     {
         SetSelectedIndexServerRpc(-2);
 
+        if (CustomizeManager.Instance.SharedPhase == CustomizeManager.CustomizePhase.Customize_layout)
+        {
+            CustomizeManager.Instance.currentLayoutManager.DespawnAllRooms();
+            Destroy(currentItem.gameObject);
+        }
         //spawning loading screen for shared clients
         SpawnLoadingScreenForSharedClientsServerRPC();
 
@@ -356,6 +386,11 @@ public class SharedView : NetworkBehaviour, IView
             if (!accepted)
             {
                 Debug.Log("deSpawning text for client " + clientId);
+                if (CustomizeManager.Instance.SharedPhase== CustomizeManager.CustomizePhase.Customize_layout)
+                {
+                    ShowCurrentItem();
+                    CustomizeManager.Instance.currentLayoutManager.RespawnAllRooms();
+                }
             }
             else 
             {
@@ -368,8 +403,8 @@ public class SharedView : NetworkBehaviour, IView
 
 
             }
-            LoadingManager.Instance.DisableLoadingScreen();//disabling loading screen          
-           // CustomizeManager.Instance.ToggleCustomize_P1_UI(true);
+            //disabling loading screen          
+            CustomizeManager.Instance.ToggleCustomize_P1_UI(true);
             
         }
     }
@@ -398,6 +433,11 @@ public class SharedView : NetworkBehaviour, IView
             LoadingManager.Instance.SetLoadingText("Waiting for host confirm the choice of layout. ");
             LoadingManager.Instance.EnableLoadingScreen();
             CustomizeManager.Instance.ToggleCustomize_P1_UI(false);
+            if(CustomizeManager.Instance.SharedPhase== CustomizeManager.CustomizePhase.Customize_layout)
+            {
+                CustomizeManager.Instance.currentLayoutManager.DespawnAllRooms();
+                Destroy(currentItem.gameObject);
+            }
         }
     }
     [ServerRpc(RequireOwnership =false)]

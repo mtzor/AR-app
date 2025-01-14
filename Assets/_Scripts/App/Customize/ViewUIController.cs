@@ -28,6 +28,7 @@ public class ViewUIController : NetworkBehaviour
         SetView(initialIVew);
     }
 
+    public IView CurrentIview{ set; get; }
     public void SetView( IView ivew)
     {
         currentIView = ivew;
@@ -48,6 +49,12 @@ public class ViewUIController : NetworkBehaviour
     public void ToggleCompareModeToggle(bool active)
     {
         compareViewUI.SetActive(active);
+    }
+    public void ToggleBtns(bool active)
+    {
+        nextItemButton.gameObject.SetActive(active);
+
+        previousItemButton.gameObject.SetActive(active);
     }
     private void OnNextItemClicked()
     {   
@@ -85,6 +92,7 @@ public class ViewUIController : NetworkBehaviour
     {
         if (iview.IsShared)
         {
+            Debug.Log("SHARED VIEW PHASE "+ CustomizeManager.Instance.SharedPhase);
             if (CustomizeManager.Instance.SharedPhase == CustomizeManager.CustomizePhase.Choose_layout || CustomizeManager.Instance.SharedPhase == CustomizeManager.CustomizePhase.Choose_room_layout)
             {
                 previousItemButton.gameObject.SetActive(true);
@@ -93,6 +101,7 @@ public class ViewUIController : NetworkBehaviour
             }
             else
             {
+                Debug.Log("Toggle btns SHARED ELSE");
                 //spawn all items of the view
                 previousItemButton.gameObject.SetActive(false);
                 nextItemButton.gameObject.SetActive(false);
@@ -101,6 +110,8 @@ public class ViewUIController : NetworkBehaviour
         }
         else if (!iview.IsShared) 
         {
+
+            Debug.Log("PRIVATE VIEW PHASE " + CustomizeManager.Instance.PrivatePhase);
             if (CustomizeManager.Instance.PrivatePhase == CustomizeManager.CustomizePhase.Choose_layout || CustomizeManager.Instance.PrivatePhase == CustomizeManager.CustomizePhase.Choose_room_layout)
             {
                 previousItemButton.gameObject.SetActive(true);
@@ -109,6 +120,8 @@ public class ViewUIController : NetworkBehaviour
             }
             else
             {
+
+                Debug.Log("Toggle btns PRIVATE ELSE");
                 //spawn all items of the view
                 previousItemButton.gameObject.SetActive(false);
                 nextItemButton.gameObject.SetActive(false);

@@ -1,4 +1,5 @@
 using MixedReality.Toolkit.UX;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Unity.Netcode;
@@ -252,9 +253,15 @@ public class DesignNetworkSyncScript : NetworkBehaviour // Implement IDisposable
     [ClientRpc(RequireOwnership = false)]
     public void saveClientClientRPC()
     {
-        SaveSystem.SaveDesignFile();
+        SaveClient();
     }
 
+
+    public async void SaveClient()
+    {
+        await SaveSystem.SaveAllModulesAsync(placedModules);
+        await SaveSystem.SaveDesignFileAsync();
+    }
 
     [ServerRpc(RequireOwnership =false)]
     private void CloseLobbyServerRPC()
@@ -309,7 +316,6 @@ public class DesignNetworkSyncScript : NetworkBehaviour // Implement IDisposable
     {
         // Add to the placedModules network list
         placedModules.Add(newModuleData);
-        SaveSystem.SaveModule(newModuleData);
     }
 
 
@@ -317,12 +323,39 @@ public class DesignNetworkSyncScript : NetworkBehaviour // Implement IDisposable
     public void LoadAllModulesServerRPC()
     {
         placedModules.Clear();
-        placedModules = SaveSystem.LoadAllModules();
+        StartCoroutine(LoadModulesCoroutine());
+    }
 
+    private IEnumerator LoadModulesCoroutine()
+    {
+        // Asynchronously wait for the returnModules task to complete
+        Task<List<ModuleData>> loadModulesTask = returnModules();
+
+        // Wait for the task to complete
+        while (!loadModulesTask.IsCompleted)
+        {
+            yield return null;
+        }
+
+        if (loadModulesTask.Exception != null)
+        {
+            Debug.LogError($"Error loading modules: {loadModulesTask.Exception}");
+            yield break;
+        }
+
+        // Get the result once the task is completed
+        placedModules = loadModulesTask.Result;
+
+        // Now you can use placedModules safely
         foreach (ModuleData moduleData in placedModules)
         {
-            Debug.Log("Module ID: " + moduleData.moduleID + " Owner ID: Player" + moduleData.ownerID + " Position X: " + moduleData.positionX + " Y:" + moduleData.positionY + " Z:" + moduleData.positionZ);
+            Debug.Log($"Module ID: {moduleData.moduleID} Owner ID: Player{moduleData.ownerID} Position X: {moduleData.positionX} Y: {moduleData.positionY} Z: {moduleData.positionZ}");
         }
+    }
+
+    public async Task<List<ModuleData>> returnModules()
+    {
+        return await SaveSystem.LoadAllModulesAsync();
     }
     #endregion
 

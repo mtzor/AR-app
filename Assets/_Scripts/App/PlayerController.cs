@@ -12,6 +12,7 @@ public class PlayerController : NetworkBehaviour
     public float glowIntensity = 2.0f;
 
     public List<Renderer> bodyPartRenderers;
+    public GameObject body;
 
     private Vector3 lastPosition;
     private Quaternion lastRotation;
@@ -23,6 +24,15 @@ public class PlayerController : NetworkBehaviour
     private NetworkVariable<Color> playerColor = new NetworkVariable<Color>(Color.white);
     // Network variable to sync iridescent state across clients
     private NetworkVariable<bool> isIridescent = new NetworkVariable<bool>(false);
+    public override void OnNetworkSpawn()
+    {
+        if (IsOwner)
+        {
+            // Register the player object
+            ulong clientId = NetworkManager.Singleton.LocalClientId;
+            CustomizeManager.Instance.PlayerObjects[clientId] = gameObject;
+        }
+    }
 
     public void Start()
     {
@@ -159,5 +169,10 @@ public class PlayerController : NetworkBehaviour
     {
         playerColor.OnValueChanged -= OnPlayerColorChanged;
         isIridescent.OnValueChanged -= OnIridescentChanged;
+    }
+
+    public void ToggleBody(bool value)
+    {
+        body.SetActive(value);
     }
 }

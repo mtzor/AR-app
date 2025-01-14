@@ -12,6 +12,7 @@ public class TooltipController : MonoBehaviour
     void Start()
     {
         tooltip.SetActive(false); // Make sure the tooltip is initially hidden
+
     }
 
     // Update is not necessary for gaze, so we're removing it.
@@ -80,5 +81,9 @@ public class TooltipController : MonoBehaviour
         tooltip.SetActive(false);
     }
 
+    public void SetTooltip(GameObject tooltip)
+    {
+        this.tooltip = tooltip;
+    }
 
 }

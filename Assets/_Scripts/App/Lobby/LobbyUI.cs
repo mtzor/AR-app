@@ -88,7 +88,7 @@ public class LobbyUI : MonoBehaviour {//Lobby UI class
         }
     }
 
-    private void Hide() {
+    public void Hide() {
         gameObject.SetActive(false);
     }
 

@@ -12,12 +12,14 @@ public class CustomizeDwellingSelector : NetworkBehaviour
 
     [SerializeField] private Transform[] moduleBtnPrefabs; // Array of module prefabs
     [SerializeField] private GameObject floorPrefab; // Prefab for the "floor" box
-
+    [SerializeField] private GameObject text;
+    [SerializeField] private GameObject scenehelper;
     private string _selectedModule;
 
     private List<GameObject> _spawnedItems;
     void Start()
     {
+        text.SetActive(false);
         _savedModules = new List<ModuleData>();
         _spawnedItems = new List<GameObject>();
     }
@@ -26,6 +28,16 @@ public class CustomizeDwellingSelector : NetworkBehaviour
     {
         LoadSavedModulesServerRPC();
 
+        Debug.Log("SPAWNING 12");
+        UIManager.Instance.SetCurrentSceneHelper(scenehelper);
+
+        while (!scenehelper.activeSelf)
+        {
+            scenehelper.SetActive(true);
+        }
+        text.SetActive(true);
+
+        Debug.Log("SPAWNING 13");
     }
 
     public static CustomizeDwellingSelector Instance
@@ -54,18 +66,23 @@ public class CustomizeDwellingSelector : NetworkBehaviour
         }
 
         // Call loading saved Modules on clients
-        LoadSavedModules();
+        LoadSavedModules();       
     }
 
-    private void LoadSavedModules()
+    private async void LoadSavedModules()
     {
         // Load saved modules data
-        _savedModules = SaveSystem.LoadAllModules();
+        _savedModules = await SaveSystem.LoadAllModulesAsync();
 
         if (_savedModules != null)
         {
             List<Transform> spawnedModules = new List<Transform>();
             float lowestY = float.MaxValue; // Start with a high value to find the lowest Y
+
+            Transform existingParent = GameObject.Find("Dwelling Selection UI").transform;
+
+            NetworkObject netObject = existingParent.GetComponent<NetworkObject>();
+           // netObject.Spawn(true);
 
             // Spawn modules
             foreach (ModuleData moduleData in _savedModules)
@@ -79,6 +96,10 @@ public class CustomizeDwellingSelector : NetworkBehaviour
                     Quaternion rotation = Quaternion.Euler(moduleData.rotationX, moduleData.rotationY, moduleData.rotationZ);
 
                     Transform spawnedModule = Instantiate(modulePrefab, position, rotation);
+                    // Adjust the position of the spawned module
+                    Vector3 newPosition = spawnedModule.position;
+                    newPosition.x += 0.07f; // Add 0.07 to the X coordinate
+                    spawnedModule.position = newPosition;
 
                     // Add the spawned module to the list
                     spawnedModules.Add(spawnedModule);
@@ -91,12 +112,18 @@ public class CustomizeDwellingSelector : NetworkBehaviour
                     }
 
                     // If you want it to be a networked object, use NetworkObject.Spawn
-                    NetworkObject netObject = spawnedModule.GetComponent<NetworkObject>();
+                    netObject = spawnedModule.GetComponent<NetworkObject>();
                     if (netObject != null)
                     {
-                        netObject.Spawn(true); // Spawn it across the network
-                    }
+                        if (!netObject.IsSpawned)
+                        {
+                            Debug.Log("SPAWNING 10");
+                            netObject.Spawn(true); // Spawn it across the network
+                        }
 
+                        // Reparent the spawned module
+                        spawnedModule.SetParent(existingParent);
+                    }
                 }
                 else
                 {
@@ -138,20 +165,31 @@ public class CustomizeDwellingSelector : NetworkBehaviour
                 );
 
                 Transform spawnedGround = Instantiate(floorPrefab, floorPosition, Quaternion.identity).transform;
+                // Adjust the Y position by 0.015
+                Vector3 newPosition = spawnedGround.position;
+                newPosition.y += 0.015f; // Increase Y by 0.015
+                newPosition.x += 0.07f;
+                spawnedGround.position = newPosition;
 
                 // If you want it to be a networked object, use NetworkObject.Spawn
-                NetworkObject netObject = spawnedGround.GetComponent<NetworkObject>();
+                netObject = spawnedGround.GetComponent<NetworkObject>();
                 if (netObject != null)
                 {
-                    netObject.Spawn(true); // Spawn it across the network
+                    if (!netObject.IsSpawned)
+                    {
+                        Debug.Log("SPAWNING 11");
+                        netObject.Spawn(true); // Spawn it across the network
+                    }
+                    // Reparent the floor object
+                    spawnedGround.SetParent(existingParent);
                 }
 
                 _spawnedItems.Add(spawnedGround.gameObject);
-            }     
-            
+            }
         }
 
     }
+
 
     [ServerRpc(RequireOwnership = false)]
     public  void SelectModuleDialogServerRPC(string selectedModule )
@@ -192,6 +230,7 @@ public class CustomizeDwellingSelector : NetworkBehaviour
             SetupCustomizeUIServerRPC();
 
             SetupCustomizeUIClientRPC();
+
 
         }
     }
@@ -255,5 +294,7 @@ public class CustomizeDwellingSelector : NetworkBehaviour
         }
 
         HandManager.Instance.DespawnAndDestroyAllHandsServerRpc();
+
+        text.SetActive(false);
     }
 }

@@ -1235,7 +1235,7 @@ MonoBehaviour:
   animator: {fileID: 0}
   clipName: delete234
   fitMaterial: {fileID: 2100000, guid: b1ac50d5d67970a49a49c29519977b61, type: 2}
-  nofitMaterial: {fileID: 2100000, guid: db61b94b23e5fb444b86c231d13e46ef, type: 2}
+  nofitMaterial: {fileID: 2100000, guid: b1ac50d5d67970a49a49c29519977b61, type: 2}
   isRectangular: 1
   positionThreshold: 0.001
   rotationThreshold: 0.1

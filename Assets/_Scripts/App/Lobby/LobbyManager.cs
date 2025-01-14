@@ -47,7 +47,8 @@ public class LobbyManager : MonoBehaviour {
     #region Session Mode Setup
     public enum SessionMode {
         Design,
-        Customize
+        Customize,
+        Visualize
     }
        
     public SessionMode GetSessionMode()
@@ -63,9 +64,13 @@ public class LobbyManager : MonoBehaviour {
         {
             sessionMode = SessionMode.Customize;
         }
-        else
+        else if(value == SessionMode.Design.ToString())
         {
             sessionMode = SessionMode.Design;
+        }
+        else
+        {
+            sessionMode = SessionMode.Visualize;
         }
     }
 
@@ -95,6 +100,10 @@ public class LobbyManager : MonoBehaviour {
     public PlayerType GetPlayerType()
     {
        return playerType ;
+    }
+    public string GetPlayerName()
+    {
+        return playerName;
     }
     public string GetLobbbyName()
     {
@@ -334,6 +343,9 @@ public class LobbyManager : MonoBehaviour {
                     break;
                 case SessionMode.Customize:
                     sessionMode = SessionMode.Design;
+                    break;
+                case SessionMode.Visualize:
+                    sessionMode = SessionMode.Visualize;
                     break;
             }
 

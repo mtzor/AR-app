@@ -5,7 +5,9 @@ using System.ComponentModel;
 using System.Threading.Tasks;
 using Unity.Netcode;
 using Unity.VisualScripting;
+using UnityEditor.PackageManager;
 using UnityEngine;
+using System.Linq;
 
 public class CustomizeManager : NetworkBehaviour
 {
@@ -32,13 +34,29 @@ public class CustomizeManager : NetworkBehaviour
     public int[] sharedChoices = new int[2];
 
 
-    private LayoutManager currentLayoutManager;
+    public LayoutManager currentLayoutManager;// ???? public
     public string _selectedModule;
+    public int selectedModuleIndex;
 
+    private Dictionary<ulong, GameObject> playerObjects = new Dictionary<ulong, GameObject>();
+
+    public Dictionary<ulong, GameObject> PlayerObjects { get { return playerObjects; } set { playerObjects = value; } }
     public string SelectedModule { set => _selectedModule = value; }
-    public LayoutManager CurrentLayoutManager { get; set; }
-    public LayoutManager PrivateLayoutManager { get; }
-    public LayoutManager SharedLayoutManager { get; }
+    public LayoutManager GetCurrentLayoutManager()
+    {    return currentLayoutManager; }
+
+    public void SetCurrentLayoutManager(bool isShared)
+    {
+        currentLayoutManager = (isShared) ? sharedLayoutManager : privateLayoutManager;
+    }
+    public LayoutManager PrivateLayoutManager(){return privateLayoutManager; }
+    public LayoutManager SharedLayoutManager() { return sharedLayoutManager; }
+
+
+public override void OnNetworkSpawn()
+    {
+
+    }
     public void SetChoice(bool isShared, int choice)
     {
         Debug.Log("Setting Choice");
@@ -113,7 +131,6 @@ public class CustomizeManager : NetworkBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        CurrentLayoutManager = privateLayoutManager;
     }
 
     // Update is called once per frame
@@ -178,7 +195,13 @@ public class CustomizeManager : NetworkBehaviour
         // Spawn it over the network (only the server can do this)
         if (NetworkManager.Singleton.IsServer)
         {
-            sharedViewObject.GetComponent<NetworkObject>().Spawn();
+            if (!sharedViewObject.GetComponent<NetworkObject>().IsSpawned)
+            {
+                Debug.Log("145 SPAWN");
+                sharedViewObject.GetComponent<NetworkObject>().Spawn();
+            }
+
+            Debug.Log("146 SPAWN");
         }
 
 
@@ -263,6 +286,8 @@ public class CustomizeManager : NetworkBehaviour
     public ModuleLayouts currModule; 
 
     public List<Transform> selectedModuleRoomLayouts = new List<Transform>();
+
+    /*
     public void SetupRoomLayouts(bool shared)
     {
         foreach (var module in moduleLayouts)
@@ -279,7 +304,7 @@ public class CustomizeManager : NetworkBehaviour
                     sharedPhase = CustomizePhase.Choose_room_layout;
                     selectedModuleRoomLayouts = module.roomLayouts[selectedIndex].roomLayouts;
 
-                    sharedLayoutManager.Layout= module.layouts[selectedIndex];
+                    sharedLayoutManager.SetLayout( module.layouts[selectedIndex]);
                    // ViewManager.Instance.SharedView.SetSharedItemsForClients(selectedIndex);
 
                 }
@@ -290,7 +315,7 @@ public class CustomizeManager : NetworkBehaviour
                     privatePhase = CustomizePhase.Choose_room_layout;
                     selectedModuleRoomLayouts = module.roomLayouts[selectedIndex].roomLayouts;
 
-                    privateLayoutManager.Layout = module.layouts[selectedIndex];
+                    privateLayoutManager.SetLayout(module.layouts[selectedIndex]);
                 }
 
 
@@ -315,8 +340,69 @@ public class CustomizeManager : NetworkBehaviour
         {
             ViewManager.Instance.PrivateView.SetItems(selectedModuleRoomLayouts);
         }
+    }*/
+
+    public void SetupRoomLayouts(bool shared)
+    {
+        // Get the index of the module with the matching name
+        int selectedIndex = -1; // Default value if no match is found
+
+        for (int i = 0; i < moduleLayouts.Count(); i++)
+        {
+            if (moduleLayouts[i].moduleName == _selectedModule)
+            {
+                selectedIndex = i;
+                selectedModuleIndex = i;
+                break; // Exit the loop as soon as a match is found
+            }
+        }
+
+        if (selectedIndex == -1)
+        {
+            Debug.LogError($"Module with name {_selectedModule} not found.");
+            return;
+        }
+
+        // Assign the matching module
+        var currModule = moduleLayouts[selectedIndex];
+
+        if (shared)
+        {
+            Debug.Log("Setting up shared room layouts...");
+            int layoutIndex = sharedChoices[0];
+            sharedPhase = CustomizePhase.Choose_room_layout;
+            selectedModuleRoomLayouts = currModule.roomLayouts[layoutIndex].roomLayouts;
+
+            sharedLayoutManager.SetLayout(currModule.layouts[layoutIndex]);
+        }
+        else
+        {
+            Debug.Log("Setting up private room layouts...");
+            int layoutIndex = privateChoices[0];
+            privatePhase = CustomizePhase.Choose_room_layout;
+            selectedModuleRoomLayouts = currModule.roomLayouts[layoutIndex].roomLayouts;
+
+            privateLayoutManager.SetLayout(currModule.layouts[layoutIndex]);
+        }
+
+        Debug.Log($"Selected module: {currModule.moduleName}, Selected index: {selectedIndex}");
+        foreach (var layout in selectedModuleRoomLayouts)
+        {
+            Debug.Log("Layout Name: " + layout.name);
+        }
+
+        // Set items in the appropriate view
+        if (shared)
+        {
+            ViewManager.Instance.SharedView.SetItems(selectedModuleRoomLayouts);
+        }
+        else
+        {
+            ViewManager.Instance.PrivateView.SetItems(selectedModuleRoomLayouts);
+        }
     }
-    
+
+
     public void SetupCustomizeLayout(bool shared)
     {
         //instantiate the correct interface based on choice[2]?
@@ -326,7 +412,7 @@ public class CustomizeManager : NetworkBehaviour
         List<Transform> itemList = new List<Transform>();
 
         foreach (var module in moduleLayouts)
-            {
+        {
 
                 if (module.moduleName == _selectedModule)
                 {
@@ -343,29 +429,42 @@ public class CustomizeManager : NetworkBehaviour
                         selectedModuleRoomLayouts = module.roomLayouts[selectedIndex0].roomLayouts;
 
                         sharedLayoutManager.SetRoomLayout(module.roomLayouts[selectedIndex0].customizationLayouts[selectedIndex1]);
-                        itemList.Add(privateLayoutManager.RoomLayout);
-                        sharedLayoutManager.DisplayLayoutModel();
-                    // ViewManager.Instance.SharedView.SetSharedItemsForClients(selectedIndex);
+                        
+                        itemList.Add(module.roomLayouts[selectedIndex0].customizationLayouts[selectedIndex1]);
 
-                }
+                        ViewManager.Instance.sharedView.SetItems(selectedModuleRoomLayouts);
+                        //setLayoutManager(true);
+
+                        if (IsServer)
+                        {
+                               // sharedLayoutManager.DisplayLayoutModelServerRPC();
+                        }
+                        // ViewManager.Instance.SharedView.SetSharedItemsForClients(selectedIndex);
+
+                    }
                     else
                     {
-                        selectedIndex0 = privateChoices[0];
-                        selectedIndex1 = privateChoices[1];
+                            selectedIndex0 = privateChoices[0];
+                            selectedIndex1 = privateChoices[1];
 
-                        privatePhase = CustomizePhase.Customize_layout;
-                        selectedModuleRoomLayouts = module.roomLayouts[selectedIndex0].roomLayouts;
+                            privatePhase = CustomizePhase.Customize_layout;
 
-                        privateLayoutManager.SetRoomLayout(module.roomLayouts[selectedIndex0].customizationLayouts[selectedIndex1]);
+                            selectedModuleRoomLayouts = module.roomLayouts[selectedIndex0].roomLayouts;
 
-                        Debug.Log("Name:"+module.roomLayouts[selectedIndex0].customizationLayouts[selectedIndex1].name);
-                        itemList.Add(privateLayoutManager.RoomLayout);
+                            privateLayoutManager.SetRoomLayout(module.roomLayouts[selectedIndex0].customizationLayouts[selectedIndex1]);
 
-                        privateLayoutManager.DisplayLayoutModel();
+                            Debug.Log("Name:"+module.roomLayouts[selectedIndex0].customizationLayouts[selectedIndex1].name);
+
+                            itemList.Add(module.roomLayouts[selectedIndex0].customizationLayouts[selectedIndex1]);
+
+                            ViewManager.Instance.privateView.SetItems(selectedModuleRoomLayouts);
+                           // setLayoutManager(false);
+
+                           // privateLayoutManager.DisplayLayoutModelServerRPC();
                     }
                  
                 }
-            }
+        }
 
             if (shared)
             {
@@ -388,6 +487,40 @@ public class CustomizeManager : NetworkBehaviour
         {
             currentLayoutManager = sharedLayoutManager;
         }
+    }
+
+    public void ToggleLocalPlayer(bool value)
+    {
+        // Check if this is the local client
+        ulong localClientId = NetworkManager.Singleton.LocalClientId;
+
+        // Fetch the local player's NetworkObject
+        if (NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(localClientId, out var localPlayerNetworkObject))
+        {
+            GameObject localPlayerObject = localPlayerNetworkObject.gameObject;
+
+            // Access the PlayerController and toggle the body
+            localPlayerObject.GetComponent<PlayerController>().ToggleBody(value);
+            Debug.Log($"Local player's GameObject: {localPlayerObject.name}");
+        }
+        else
+        {
+            Debug.LogWarning("Local player not found in SpawnedObjects.");
+        }
+    }
+
+
+    [ClientRpc(RequireOwnership = false)]
+    public void PropagatePhaseUpdateClientRpc(AppManager.AppPhase phase)
+    {
+        AppManager.Instance.UpdatePhase(phase);
+    }
+
+
+    [ClientRpc(RequireOwnership = false)]
+    public void MainMenuClientRpc()
+    {
+        AppManager.Instance.UpdatePhase(AppManager.AppPhase.MainMenu);
     }
 
 }

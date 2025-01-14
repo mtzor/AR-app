@@ -23,8 +23,10 @@ public class AppManager : MonoBehaviour
         HomeDialogue,
         Lobby_List_Design,
         Lobby_List_Customize,
+        Lobby_List_Visualize,
         Lobby_Design,
         Lobby_Customize,
+        Lobby_Visualize,
         Design_P1_Host,
         Design_P1,
         Design_P12_Host,
@@ -35,7 +37,7 @@ public class AppManager : MonoBehaviour
         Customize_P1,
         Customize_P2,
         Saving_Design,
-        Visualize_Menu,
+        Visualize_Module_Selection,
         Visualize
 
     }
@@ -186,6 +188,20 @@ public class AppManager : MonoBehaviour
                 LoadingManager.Instance.DisableLoadingScreen();
 
                 break;
+            case AppPhase.Lobby_List_Visualize:
+                // Handle tutorial logic
+                currentPhase = AppPhase.Lobby_List_Visualize;
+                TriggerAppPhaseChange();
+
+
+                LoadingManager.Instance.SetLoadingText("Loading Designs");
+                LoadingManager.Instance.EnableLoadingScreen();
+
+                await Task.Delay(1000);
+
+                LoadingManager.Instance.DisableLoadingScreen();
+
+                break;
 
             case AppPhase.Lobby_Customize:
                 // Handle tutorial logic
@@ -203,6 +219,29 @@ public class AppManager : MonoBehaviour
                 LobbyManager.Instance.UpdatePlayerCharacter(LobbyManager.Instance.GetPlayerType());
 
                 TriggerAppPhaseChange();
+
+                break;
+
+            case AppPhase.Lobby_Visualize:
+                // Handle tutorial logic
+                currentPhase = AppPhase.Lobby_Visualize;
+
+                LoadingManager.Instance.SetLoadingText("Loading Lobby");
+                LoadingManager.Instance.EnableLoadingScreen();
+
+                while (!LobbyManager.Instance.LobbyCreated && !LobbyManager.Instance.LobbyJoined)
+                {
+                    await Task.Delay(200);
+                }
+
+                LoadingManager.Instance.DisableLoadingScreen();
+                LobbyManager.Instance.UpdatePlayerCharacter(LobbyManager.Instance.GetPlayerType());
+
+                TriggerAppPhaseChange();
+
+                setPhase(true);
+                LobbyManager.Instance.StartSession();
+                LobbyUI.Instance.Hide();
 
                 break;
 
@@ -230,6 +269,24 @@ public class AppManager : MonoBehaviour
                // UIManager.Instance.Show("Module Selection Interface");
 
                 LoadingManager.Instance.SetLoadingText("Loading Dwelling Selection Interface");
+                LoadingManager.Instance.EnableLoadingScreen();
+
+                await Task.Delay(2000);
+
+                LoadingManager.Instance.DisableLoadingScreen();
+
+                TriggerAppPhaseChange();
+
+                //TriggerAppPhaseChange();
+
+                break;
+
+            case AppPhase.Visualize_Module_Selection:
+                // Handle tutorial logic
+                currentPhase = AppPhase.Visualize_Module_Selection;
+                // UIManager.Instance.Show("Module Selection Interface");
+
+                LoadingManager.Instance.SetLoadingText("Loading Vizualize Selection Interface");
                 LoadingManager.Instance.EnableLoadingScreen();
 
                 await Task.Delay(2000);
@@ -320,6 +377,16 @@ public class AppManager : MonoBehaviour
 
                 break;
 
+            case AppPhase.Visualize:
+
+                TriggerAppPhaseChange();
+                // Handle tutorial logic
+                currentPhase = AppPhase.Visualize;
+
+                TriggerAppPhaseChange();
+
+                break;
+
             case AppPhase.Saving_Design:
                 // Handle tutorial logic
                 currentPhase = AppPhase.Saving_Design;
@@ -375,6 +442,10 @@ public class AppManager : MonoBehaviour
         {
             UpdatePhase(AppPhase.Lobby_List_Customize);
         }
+        else if(LobbyManager.Instance.sessionMode == LobbyManager.SessionMode.Visualize)
+        {
+            UpdatePhase(AppPhase.Lobby_List_Visualize);
+        }
     }
 
     //Changes AppPhase Lobby_list -> Lobby
@@ -387,6 +458,10 @@ public class AppManager : MonoBehaviour
         else if (LobbyManager.Instance.sessionMode == LobbyManager.SessionMode.Customize)
         {
             UpdatePhase(AppPhase.Lobby_Customize);
+        }
+        else if (LobbyManager.Instance.sessionMode == LobbyManager.SessionMode.Visualize)
+        {
+            UpdatePhase(AppPhase.Lobby_Visualize);
         }
     }
 
@@ -407,6 +482,11 @@ public class AppManager : MonoBehaviour
         {
             Debug.Log("SET PHASE CUSTOMIZE MODULE SELECTION");
             UpdatePhase(AppPhase.Customize_Module_Selection);
+        }
+        else if (LobbyManager.Instance.sessionMode == LobbyManager.SessionMode.Visualize && currentPhase != AppPhase.Visualize_Module_Selection)
+        {
+            Debug.Log("SET PHASE VIZUALIZE MODULE SELECTION");
+            UpdatePhase(AppPhase.Visualize_Module_Selection);
         }
     }
 
@@ -437,9 +517,17 @@ public class AppManager : MonoBehaviour
         {
             UpdatePhase(AppPhase.Customize_P1);
         }
+        else if (currentPhase == AppManager.AppPhase.Visualize_Module_Selection)
+        {
+            UpdatePhase(AppPhase.Visualize);
+        }
         else if (currentPhase == AppManager.AppPhase.Customize_P1)
         {
             UpdatePhase(AppPhase.Customize_P2);
+        }
+        else if (currentPhase == AppManager.AppPhase.Customize_P2)
+        {
+            UpdatePhase(AppPhase.MainMenu);
         }
     }
     
@@ -461,6 +549,6 @@ public class AppManager : MonoBehaviour
     {
         // Log completion
         Debug.Log("Tutorial completed, returning to Role Choice.");
-        UpdatePhase(AppPhase.Role_Choice).ConfigureAwait(false);
+        UpdatePhase(AppPhase.Role_Choice);
     }
 }
