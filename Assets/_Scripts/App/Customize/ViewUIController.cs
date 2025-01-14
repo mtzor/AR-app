@@ -28,7 +28,7 @@ public class ViewUIController : NetworkBehaviour
         SetView(initialIVew);
     }
 
-    public IView CurrentIview{ set; get; }
+    public IView CurrentIview(){ return currentIView; }
     public void SetView( IView ivew)
     {
         currentIView = ivew;

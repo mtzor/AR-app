@@ -8,12 +8,15 @@ using Unity.VisualScripting;
 using UnityEditor.PackageManager;
 using UnityEngine;
 using System.Linq;
+using TMPro;
 
 public class CustomizeManager : NetworkBehaviour
 {
     private static CustomizeManager _instance;
     [SerializeField] private GameObject customize_P1_UI;
     [SerializeField] private GameObject customize_P2_UI;
+
+    [SerializeField] private TMP_Text text;
 
     [SerializeField] private GameObject roomMenuL;
     [SerializeField] private GameObject roomMenuS;
@@ -96,7 +99,11 @@ public override void OnNetworkSpawn()
 
     public void ToggleCustomize_P2_UI(bool toggle)
     {
-        customize_P2_UI.SetActive(toggle);
+        customize_P2_UI.SetActive(toggle);   }
+
+    public void ToggleText(bool toggle)
+    {
+        text.gameObject.SetActive(toggle);
     }
 
     public static CustomizeManager Instance
