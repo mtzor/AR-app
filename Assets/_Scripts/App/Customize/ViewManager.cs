@@ -109,7 +109,6 @@ public class ViewManager : MonoBehaviour
             }
             else
             {
-                CustomizeManager.Instance.ToggleText(false);
                 sharedView.DestroyCurrentItem();
                 ToggleCompleteView(true);
                 UIManager.Instance.SetCurrentSceneHelper(simpleSceneHelper);
@@ -133,8 +132,6 @@ public class ViewManager : MonoBehaviour
             }
             else
             {
-
-                CustomizeManager.Instance.ToggleText(false);
                 privateView.DestroyCurrentItem();
                 ToggleCompleteView(true);
                 UIManager.Instance.SetCurrentSceneHelper(simpleSceneHelper);
@@ -199,7 +196,6 @@ public class ViewManager : MonoBehaviour
                     CustomizeManager.Instance.SharedPhase = CustomizeManager.CustomizePhase.Choose_room_layout;
                     Debug.Log("Setting up room layouts");
                    CustomizeManager.Instance.SetupRoomLayouts(isShared);
-                    uiController.CurrentIview().NextItem();
                     finalizeChoiceBtn.gameObject.SetActive(true);
                     CustomizeManager.Instance.ToggleCustomize_P1_UI(true);
                     LoadingManager.Instance.DisableLoadingScreen();
@@ -209,7 +205,6 @@ public class ViewManager : MonoBehaviour
                 {
                     if (!isSharedComplete)
                     {
-                        CustomizeManager.Instance.ToggleText(false);
                         isSharedComplete = true;
                         ToggleCompleteView(true);
                         Debug.Log("PROGRESS INDICATOR SHARED");
@@ -222,7 +217,6 @@ public class ViewManager : MonoBehaviour
                     
                     if(isSharedComplete && isPrivateComplete)
                     {
-                        CustomizeManager.Instance.ToggleText(false);
                         //CustomizeManager.Instance.SharedPhase = CustomizeManager.CustomizePhase.Customize_layout;
                         Debug.Log("Setting the next phase appmanager");
                         AppManager.Instance.setNextPhase();
@@ -239,10 +233,8 @@ public class ViewManager : MonoBehaviour
 
                     }
                 }
-                else if (CustomizeManager.Instance.SharedPhase == CustomizeManager.CustomizePhase.Customize_layout)
+                else if (CustomizeManager.Instance.PrivatePhase == CustomizeManager.CustomizePhase.Customize_layout)
                 {
-                    CustomizeManager.Instance.ToggleText(false);
-
                     if (!isSharedComplete)
                     {
                         isSharedComplete = true;
@@ -278,7 +270,6 @@ public class ViewManager : MonoBehaviour
                 {
                     CustomizeManager.Instance.PrivatePhase = CustomizeManager.CustomizePhase.Choose_room_layout;
                     CustomizeManager.Instance.SetupRoomLayouts(isShared);
-                    uiController.CurrentIview().NextItem();
                     finalizeChoiceBtn.gameObject.SetActive(true);
                     CustomizeManager.Instance.ToggleCustomize_P1_UI(true);
                     Debug.Log("Setting up room layouts");
@@ -300,7 +291,6 @@ public class ViewManager : MonoBehaviour
 
                     if (isSharedComplete && isPrivateComplete)
                     {
-                        CustomizeManager.Instance.ToggleText(false);
                         Debug.Log("Setting the next phase appmanager");
                         // CustomizeManager.Instance.PrivatePhase = CustomizeManager.CustomizePhase.Customize_layout;
                         AppManager.Instance.setNextPhase();
@@ -337,7 +327,6 @@ public class ViewManager : MonoBehaviour
 
                     if (isSharedComplete && isPrivateComplete)
                     {
-                        CustomizeManager.Instance.ToggleText(false);
                         Debug.Log("Setting the next phase appmanager");
                         AppManager.Instance.setNextPhase();
                         CustomizeManager.Instance.ToggleCustomize_P1_UI(false);
@@ -385,11 +374,11 @@ public class ViewManager : MonoBehaviour
     {
         CustomizeManager.CustomizePhase currentPhase=CustomizeManager.CustomizePhase.Choose_layout;
 
-        if (uiController.CurrentIview() == sharedView)
+        if (uiController.CurrentIview == sharedView)
         {
             currentPhase = CustomizeManager.Instance.SharedPhase;
         }
-        else if(uiController.CurrentIview() == privateView)
+        else if(uiController.CurrentIview == privateView)
         {
             currentPhase = CustomizeManager.Instance.SharedPhase;
         }

@@ -535,14 +535,14 @@ public class AppManager : MonoBehaviour
     public async Task<DialogButtonType> StartApp()
     {
 
-        DialogButtonType result = await DialogManager.Instance.SpawnDialogWithAsync("Welcome to the AR-App application!", "Would you like to view the application tutorial?", "VIEW","CANCEL");
+        DialogButtonType result = await DialogManager.Instance.SpawnDialogWithAsync("Welcome to the AR-App application !", "Would you like to view the application tutorial ?", "VIEW","CANCEL");
         return result;
     }
 
     public async Task<DialogButtonType> RoleChoice()
     {
 
-        DialogButtonType result = await DialogManager.Instance.SpawnDialogWithAsync("Chose your role.", "Are you a non expert user or an expert user (architect,civil engineer)?", "EXPERT", "NON-EXPERT");
+        DialogButtonType result = await DialogManager.Instance.SpawnDialogWithAsync("Chose your role .", "Are you a non expert user or an expert user (architect,engineer) ?", "EXPERT", "NON-EXPER");
         return result;
     }
     public void TutorialComplete()

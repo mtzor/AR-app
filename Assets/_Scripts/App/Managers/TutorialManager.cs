@@ -18,7 +18,6 @@ public class TutorialManager : MonoBehaviour
     private bool menuClosed;
     private bool sliderUpdated;
     public bool cubeMoved;
-    public bool cubeRotated;
 
     private CancellationTokenSource _cancellationTokenSource;
     private bool tutorialPaused = false;
@@ -43,7 +42,7 @@ public class TutorialManager : MonoBehaviour
             return _instance;
         }
     }
-    Quaternion initial_Rotation;
+
     void Start()
     {
         cancelTutorialButton.gameObject.SetActive(false);
@@ -51,16 +50,9 @@ public class TutorialManager : MonoBehaviour
 
         cancelTutorialButton.OnClicked.AddListener(() => { cancelTutorial(); });
 
-        initial_Rotation = cube.gameObject.transform.rotation;
-
         //runTutorial();
     }
-    public void CheckRotated() {
-        if (cube.gameObject.transform.rotation != initial_Rotation)
-        {
-            CubeRotated = true;
-        }
-    }
+
     private async void cancelTutorial()
     {
         tutorialPaused = true;
@@ -130,7 +122,7 @@ public class TutorialManager : MonoBehaviour
 
             await WaitForCondition(() => handRemoved, token);
 
-            await SpawnAndSaveNeutralDialog("Now on to the next Gesture! The pinch Gesture:,\r\nWe will try pinching to move the hand menu\r\n 1. Hold up your other arm and connect your pointer with your thumb to grab the white bar on the bottom and place it in your view.",
+            await SpawnAndSaveNeutralDialog("Use the bar on the bottom to place it in your view.",
                 "Give it a try now!",
                 token);
 
@@ -150,6 +142,14 @@ public class TutorialManager : MonoBehaviour
 
             await WaitForCondition(() => !menuToggled, token);
 
+            await SpawnAndSaveNeutralDialog("Now on to the next Gesture! The pinch Gesture:",
+                "We will try pinching to adjust the app volume.\r\n 1. Hold up your other arm and connect your pointer with your thumb to grab the volume knob. \r\n 2. Move your Hand Up/Down to adjust the app Volume.",
+                token);
+
+            await Task.Delay(1000, token);
+
+            await WaitForCondition(() => sliderUpdated, token);
+
             await SpawnAndSaveNeutralDialog("Well done!", "You can now close the hand menu.", token);
 
             await WaitForCondition(() => menuClosed, token);
@@ -161,11 +161,6 @@ public class TutorialManager : MonoBehaviour
             cube.SetActive(true);
 
             await WaitForCondition(() => cubeMoved, token);
-
-            await SpawnAndSaveNeutralDialog("Well done! Let's now try rotating the object.", "Pinch and turn your palm to rotate the object.",
-                token);
-
-            await WaitForCondition(() => cubeRotated, token);
 
             await SpawnAndSaveDialog(
                 "Well done! The tutorial is now complete.",
@@ -229,6 +224,4 @@ public class TutorialManager : MonoBehaviour
     public bool MenuClosed { get => menuClosed; set => menuClosed = value; }
     public bool SliderUpdated { get => sliderUpdated; set => sliderUpdated = value; }
     public bool CubeMoved { get => cubeMoved; set => cubeMoved = value; }
-
-    public bool CubeRotated { get => cubeRotated; set => cubeRotated = value; }
 }
