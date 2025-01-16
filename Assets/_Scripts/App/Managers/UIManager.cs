@@ -301,7 +301,7 @@ public class UIManager : MonoBehaviour
                 sceneHelper.SetActive(true);
             }
 
-            GameObject requesteSceneHelper= GameObject.FindGameObjectWithTag(uiElementName);
+            GameObject requesteSceneHelper = GameObject.FindGameObjectWithTag(uiElementName);
             Debug.Log("RequestedSceneHelper" + requesteSceneHelper + " found");
 
             foreach (var sceneHelper in additionalSceneHelpers)
@@ -314,7 +314,7 @@ public class UIManager : MonoBehaviour
             currentSceneHelper.SetActive(true);
         }
     }
-    private bool isActive=false;
+    private bool isActive = false;
     public void ToggleCurrentSceneHelper()
     {
         if (currentSceneHelper == null)
@@ -322,7 +322,7 @@ public class UIManager : MonoBehaviour
             Debug.LogWarning("No current scene helper to toggle.");
             return;
         }
-        isActive=!isActive;
+        isActive = !isActive;
 
         currentSceneHelper.SetActive(isActive);
         foreach (Transform child in currentSceneHelper.transform)
@@ -353,7 +353,7 @@ public class UIManager : MonoBehaviour
                 additionalSceneHelpers.Add(obj); // Add each found object to the sceneHelpers list
                 Debug.Log("Found object with name: " + obj.name);
             }
-           
+
         }
     }
 
