@@ -57,7 +57,7 @@ public class TestRelay : MonoBehaviour
         return null;
     }
 
-    public async void JoinRelay(string JoinCode)
+    public async Task JoinRelay(string JoinCode)
     {
         try
         {

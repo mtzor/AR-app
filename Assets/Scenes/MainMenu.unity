@@ -95355,7 +95355,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 7157e766b354e18469105e6fa374d845, type: 2}
   - {fileID: 11400000, guid: a7858b8ced81aea4b850ac64e6d7c630, type: 2}
   sessionMode: 0
-  currPlayer: 0
+  currPlayer: 1
 --- !u!114 &9449573612953350
 MonoBehaviour:
   m_ObjectHideFlags: 0

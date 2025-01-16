@@ -66,8 +66,11 @@ public class UIManager : MonoBehaviour
     {
         if (uiElementsDict.ContainsKey(uiElementName))
         {
-            uiElementsDict[uiElementName].SetActive(true);
-            UpdateSceneHelper(uiElementName);
+            if (uiElementsDict[uiElementName] != null)
+            {
+                uiElementsDict[uiElementName].SetActive(true);
+                UpdateSceneHelper(uiElementName);
+            }
         }
         else
         {
@@ -79,7 +82,10 @@ public class UIManager : MonoBehaviour
     {
         if (uiElementsDict.ContainsKey(uiElementName))
         {
-            uiElementsDict[uiElementName].SetActive(false);
+            if (uiElementsDict[uiElementName] != null)
+            {
+                uiElementsDict[uiElementName].SetActive(false);
+            }
         }
         else
         {
@@ -91,7 +97,10 @@ public class UIManager : MonoBehaviour
     {
         foreach (var uiElement in uiElementsDict.Values)
         {
-            uiElement.SetActive(false);
+            if (uiElement != null)
+            {
+                uiElement.SetActive(false);
+            }
         }
 
         Show("HandMenu");
