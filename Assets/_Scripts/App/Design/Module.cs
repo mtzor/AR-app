@@ -49,6 +49,7 @@ public class Module : NetworkBehaviour
 
     }
 
+    public void AddedTest() { }
 
     private bool HasTransformChanged()
     {
